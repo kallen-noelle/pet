@@ -22,7 +22,11 @@
  *     （如余额周期读不到就按 1800、碎碎念按 300）；
  *   - **显式写了但非法**（类型/结构/白名单外）→ 告警 + 填内置默认值
  *     （同一 文件+字段 进程内只告警一次，避免每请求刷屏；保证返回绝不出现残缺/非法值）；
+<<<<<<< HEAD
  *   - **例外：全局默认**（GLOBAL_DEFAULT_KEYS 那 10 个「用户级成本/偏好/环境/节奏」字段）——
+=======
+ *   - **例外：全局默认**（GLOBAL_DEFAULT_KEYS 那 9 个「用户级成本/偏好/环境/节奏」字段）——
+>>>>>>> yellow-hair
  *     文件宠物条目的基座取**用户层**（main-config.jsonc）而不是内置默认，即"设置页改一次，
  *     所有宠物都生效"；种类文件仍可在自己顶层覆盖（写了就用自己那份）；
  *   - 身份字段例外（无默认可填）：id 必须存在、全局唯一（缺失/重复/非法/冲突 →
@@ -34,7 +38,11 @@
  * 本模块是 host 自包含实现（不 import src/shared —— DSH 单文件加载约束）；
  * 浏览器/桌面侧的对应纯逻辑（把成品拍平成渲染列表）在 src/shared/config.ts。
  */
+<<<<<<< HEAD
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, writeFileSync } from 'node:fs';
+=======
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
+>>>>>>> yellow-hair
 import { dirname, join } from 'node:path';
 
 /** 位置角落白名单 */
@@ -46,6 +54,7 @@ const CORNER_SET: ReadonlySet<string> = new Set(CORNERS);
 const PET_DISPLAYS = ['web', 'desktop', 'both', 'none'] as const;
 export const PET_DISPLAY_SET: ReadonlySet<string> = new Set(PET_DISPLAYS);
 
+<<<<<<< HEAD
 /** font.family 白名单（预设 id）——**必须与 src/shared/fonts.ts 的 FONT_PRESETS 保持一致**：
  *  host 不能 import src/shared（见文件头注释的 DSH 单文件加载约束），这里是那份清单的自包含副本，
  *  所以加/删字体预设时两边都要改。 */
@@ -63,6 +72,8 @@ const FONT_FAMILY_SET: ReadonlySet<string> = new Set([
 const FONT_SIZE_MIN = 4;
 const FONT_SIZE_MAX = 200;
 
+=======
+>>>>>>> yellow-hair
 /** id 禁用的字符（Windows 文件名保留符 + 控制字符，防配置值逃逸文件路径）。
  *  同时被 thumb 路由的 petId 校验复用：那里同样是"标识符不得当路径片段"。 */
 // eslint-disable-next-line no-control-regex
@@ -83,8 +94,11 @@ export const ID_FORBIDDEN = /[\\/:\x00-\x1f]/;
  *   - `physics`：拖拽抛掷手感；`petCollision` 更是**跨宠物**行为（相撞按动量守恒弹开），
  *     按种类分在语义上站不住：两只不同种类的宠物相撞时用谁的系数？
  *   - `confineToScreen`：多屏是用户环境 / 使用习惯，不是宠物属性
+<<<<<<< HEAD
  *   - `font`：字体种类 / 字号 / 是否随宠物缩放是**看的人**的偏好，不是某个种类的属性——
  *     同一套字体偏好用在所有宠物（含 pet pack）才符合预期
+=======
+>>>>>>> yellow-hair
  *
  * 不在名单里的顶层字段基座仍是**内置默认**：`whisperPrompt`（人设）、`memes`（表情包）、
  * `animations` / `animationWeights`（与素材根绑定）、`workStatusTexts`（文案）——一个种类一份
@@ -92,7 +106,10 @@ export const ID_FORBIDDEN = /[\\/:\x00-\x1f]/;
  */
 const GLOBAL_DEFAULT_KEYS = [
   'physics',
+<<<<<<< HEAD
   'font',
+=======
+>>>>>>> yellow-hair
   'confineToScreen',
   'whisperImageEnabled',
   'chatImageEnabled',
@@ -243,6 +260,36 @@ export function readPetConfigEntry(
   return hit ? { path: hit.path, raw: readJsonc(hit.path) } : undefined;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * 配置版本号（GET /state 顺带下发的「配置有没有变过」指纹）。
+ *
+ * 取「所有会被合并进来的配置文件」的 mtime 最大值：用户主配置（含旧路径回落）+ 全部文件宠物配置。
+ * 为什么用文件时间戳而不是内存计数器：**用户手工编辑 main-config.jsonc / pet/*.json 也必须被感知**——
+ * 那条路径不经过任何写接口，计数器永远不动。
+ *
+ * 消费端只比较「与上一拍是否相同」，不解析、不排序，所以直接给毫秒时间戳的字符串。
+ * 文件都不存在（首次使用）→ "0"；首次写盘后 mtime 立刻变化，版本随之改变。
+ */
+export function configVersion(paths: ConfigPaths): string {
+  let max = 0;
+  const bump = (file: string | undefined): void => {
+    if (!file) return;
+    try {
+      const st = statSync(file);
+      if (st.mtimeMs > max) max = st.mtimeMs;
+    } catch {
+      /* 文件不存在（尚未写过配置 / pet 目录为空）→ 跳过该来源 */
+    }
+  };
+  bump(paths.userFile);
+  bump(paths.legacyUserFile);
+  for (const file of scanPetFiles(paths.petDir)) bump(file.path);
+  return String(max);
+}
+
+>>>>>>> yellow-hair
 /** animations 段完整性校验（与旧 assertAnimationsHost 同一套规则；不 throw，非法返回 false） */
 function animationsValid(a: unknown): boolean {
   if (!a || typeof a !== 'object') return false;
@@ -320,6 +367,7 @@ function physicsValid(value: unknown): boolean {
   );
 }
 
+<<<<<<< HEAD
 /** font 段校验：family ∈ 预设白名单、size 为区间内的有限数字、followPet 为布尔。
  *  与 physics 同口径：**整段校验**——任一子键缺失/非法即整段非法（告警 + 取默认），
  *  不做「缺子键逐个补默认」；对象字段一律整段替换（见文件头合并规则）。 */
@@ -332,6 +380,8 @@ function fontValid(value: unknown): boolean {
   return typeof f.followPet === 'boolean';
 }
 
+=======
+>>>>>>> yellow-hair
 /** whisperModel / chatModel 段校验：{ provider, model } 两个字符串，
  *  **要么都留空（= 跟随当前对话的模型）要么都非空**——只填一半（选了服务商没选模型，或反之）
  *  会拼出"用 A 家的模型名去问 B 家"这种必然失败的组合，按非法处理（告警 + 取默认）。 */
@@ -384,8 +434,11 @@ function topFieldValid(key: string, value: unknown): boolean {
       return eventsRefreshSecValid(value);
     case 'physics':
       return physicsValid(value);
+<<<<<<< HEAD
     case 'font':
       return fontValid(value);
+=======
+>>>>>>> yellow-hair
     case 'whisperModel':
     case 'chatModel':
       return modelSelectionValid(value);
@@ -700,11 +753,14 @@ export function saveUserConfig(
   // 传了就按白名单写入；没传则走下面的透传保留（用户手改的值原样不动）。
   const ph = o.physics;
   if (ph !== undefined && !physicsValid(ph)) return null;
+<<<<<<< HEAD
   // font（字体种类 / 字号 / 是否随宠物缩放；设置页「外观与字体」区写的就是它）：与 physics
   // 同一套语义——传了就整段校验后进白名单，没传则走下面的透传保留。
   // 校验直接复用读取侧的 fontValid（family 白名单 / size 4~200 / followPet 布尔），读写同一份规则。
   const fo = o.font;
   if (fo !== undefined && !fontValid(fo)) return null;
+=======
+>>>>>>> yellow-hair
   // whisperModel / chatModel（碎碎念 / 对话各自的服务商 + 模型；设置页两个下拉框写的就是它们）：
   // 与 physics 同一套语义——传了就整段校验后进白名单，没传则走下面的透传保留。
   // 落盘时归一化成 { provider, model } 两个 trim 过的字符串（请求体多带的键不写进用户层）。
@@ -733,7 +789,10 @@ export function saveUserConfig(
   if (cie !== undefined) outConfig.chatImageEnabled = cie;
   if (cts !== undefined) outConfig.confineToScreen = cts;
   if (ph !== undefined) outConfig.physics = ph;
+<<<<<<< HEAD
   if (fo !== undefined) outConfig.font = fo;
+=======
+>>>>>>> yellow-hair
   if (wm !== undefined) outConfig.whisperModel = cleanModel(wm as Record<string, unknown>);
   if (cm !== undefined) outConfig.chatModel = cleanModel(cm as Record<string, unknown>);
   // 数值归一化落盘：请求体传 "9" 也存成 9（与读取侧 topFieldValid 的 Number() 口径一致）
@@ -749,7 +808,10 @@ export function saveUserConfig(
   if (cie !== undefined) bodyOwned.add('chatImageEnabled');
   if (cts !== undefined) bodyOwned.add('confineToScreen');
   if (ph !== undefined) bodyOwned.add('physics');
+<<<<<<< HEAD
   if (fo !== undefined) bodyOwned.add('font');
+=======
+>>>>>>> yellow-hair
   if (wm !== undefined) bodyOwned.add('whisperModel');
   if (cm !== undefined) bodyOwned.add('chatModel');
   if (cmr !== undefined) bodyOwned.add('chatMemoryRounds');

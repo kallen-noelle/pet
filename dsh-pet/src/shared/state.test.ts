@@ -13,6 +13,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
+<<<<<<< HEAD
 import {
   flattenCounters,
   readAnim,
@@ -23,6 +24,9 @@ import {
   takeChanged,
   type PollState,
 } from './state.ts';
+=======
+import { flattenCounters, readBalance, takeChanged, type PollState } from './state.ts';
+>>>>>>> yellow-hair
 
 /** 造一份 S：sections / pets 用简写（叶子值 = counter，data 用 data 字段给） */
 function makeState(
@@ -102,17 +106,25 @@ describe('takeChanged —— counter 变了才算变化', () => {
 });
 
 describe('readBalance —— 余额叶子 → 客户端视图', () => {
+<<<<<<< HEAD
   test('money：raw.data 摊平到视图顶层（含多币种钱包与峰谷装饰）', () => {
+=======
+  test('money：raw.data 摊平到视图顶层（含数据自带的档位基准与峰谷装饰）', () => {
+>>>>>>> yellow-hair
     const hit = readBalance({
       counter: 1,
       data: {
         ok: true,
         provider: 'deepseek',
         shape: 'money',
+<<<<<<< HEAD
         data: {
           wallets: [{ currency: 'CNY', total: '10.00', granted: '0.00', toppedUp: '10.00', fullBalance: '20' }],
           tier: 'idle',
         },
+=======
+        data: { currency: 'CNY', total: '10.00', fullBalance: '20', tier: 'idle' },
+>>>>>>> yellow-hair
       },
     });
     assert.deepEqual(hit, {
@@ -120,7 +132,15 @@ describe('readBalance —— 余额叶子 → 客户端视图', () => {
         provider: 'deepseek',
         shape: 'money',
         ok: true,
+<<<<<<< HEAD
         wallets: [{ currency: 'CNY', total: '10.00', granted: '0.00', toppedUp: '10.00', fullBalance: '20' }],
+=======
+        currency: 'CNY',
+        total: '10.00',
+        granted: undefined,
+        toppedUp: undefined,
+        fullBalance: '20',
+>>>>>>> yellow-hair
         tier: 'idle',
       },
       manual: false,
@@ -166,6 +186,7 @@ describe('readBalance —— 余额叶子 → 客户端视图', () => {
     assert.equal(readBalance({ counter: 1, data: { ok: true, provider: 'p', shape: 'money' } }), null, '缺 data 段');
   });
 });
+<<<<<<< HEAD
 
 describe('readAnim —— 点播动画叶子（名字或地址 + 回执编号）', () => {
   test('名字与 playbackId 都取到（渲染端据此在四个时机上报真实状态）', () => {
@@ -397,3 +418,5 @@ describe('readThrow —— 抛掷指令叶子（角度 + 力度）', () => {
     assert.equal(readThrow({ counter: 1, data: { angle: 45, power: NaN } }), null);
   });
 });
+=======
+>>>>>>> yellow-hair

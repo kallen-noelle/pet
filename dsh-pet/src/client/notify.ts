@@ -16,8 +16,12 @@
 //   - 生成失败（agent/error，无回合位置）
 //   - 权限申请（approval/asked）
 //   - 用户选择（tool/call ask_user_question）
+<<<<<<< HEAD
 // 过滤：aborted / interrupted 不弹（host 侧 reduceNotifyFrame 已滤）；「对话完成」在 host 侧还要过
 // 活动门 #114——该会话还有在跑的下属 / 团队成员、后台任务或活跃提醒时就先不弹；重连/刷新不重放历史
+=======
+// 过滤：aborted / interrupted 不弹（host 侧 reduceNotifyFrame 已滤）；重连/刷新不重放历史
+>>>>>>> yellow-hair
 //（首拉记基线 counter，与其余叶子同一套语义）。
 
 import { frameToToast, truncate, NOTIFY_ICONS as ICON_NAMES, type NotifyFrame } from '../shared/notify';
@@ -70,6 +74,7 @@ export const NOTIFY_ICONS = {
 /** 当前生效的总开关（运行中可被 reloadNotifications 更新——设置页保存后即时生效，无需刷新） */
 let notifyEnabled = true;
 
+<<<<<<< HEAD
 /**
  * 会话跳转器：由 app.ts 装配时注入（包装 DSH 客户端的 `uiWorkspace.openSession`）。
  * 抽成接口是为了让本模块不 direct 依赖 DSH 服务类型，取不到服务时天然退化成"不跳会话"。
@@ -117,6 +122,11 @@ export function wireNotificationClick(n: Notification, sessionId?: string): void
 /** 发一条系统通知；总开关关闭 / 环境不支持 / 未授权 / 聚焦本页 时静默跳过。
  * 日志（【弹窗】类型：内容）在门之后记录——只有真正发出通知时才记，被门拦下的触发不产生日志。 */
 function toast(title: string, body?: string, icon?: string, sessionId?: string): void {
+=======
+/** 发一条系统通知；总开关关闭 / 环境不支持 / 未授权 / 聚焦本页 时静默跳过。
+ * 日志（【弹窗】类型：内容）在门之后记录——只有真正发出通知时才记，被门拦下的触发不产生日志。 */
+function toast(title: string, body?: string, icon?: string): void {
+>>>>>>> yellow-hair
   if (!notifyEnabled) return;
   if (isPageActive()) return;
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
@@ -125,20 +135,37 @@ function toast(title: string, body?: string, icon?: string, sessionId?: string):
     const opts: NotificationOptions = {};
     if (body) opts.body = truncate(body);
     if (icon) opts.icon = icon;
+<<<<<<< HEAD
     // 点击通知：跳到那条会话 + 聚焦回 DSH 页面 + 把桌面宿主窗口叫回前台（图标加载失败只降级为无图标，绝不关闭弹窗）
     const n = new Notification(title, opts);
     wireNotificationClick(n, sessionId);
+=======
+    // 点击通知：聚焦回 DSH 页面并关闭该通知（图标加载失败只降级为无图标，绝不关闭弹窗）
+    const n = new Notification(title, opts);
+    n.onclick = () => {
+      window.focus();
+      n.close();
+    };
+>>>>>>> yellow-hair
   } catch {
     /* 个别环境（e.g. 部分桌面壳）可能在构造时抛错：忽略，不打断业务 */
   }
 }
 
+<<<<<<< HEAD
 /** 帧 → toast 并发出（映射来自 shared；未知帧静默跳过）。
  * 帧里的 sessionId 一并透传：点击时据此跳到那条会话。 */
 function toastFrame(frame: NotifyFrame): void {
   const t = frameToToast(frame);
   if (!t) return;
   toast(t.title, t.body, PIC(t.icon), typeof frame.sessionId === 'string' ? frame.sessionId : undefined);
+=======
+/** 帧 → toast 并发出（映射来自 shared；未知帧静默跳过） */
+function toastFrame(frame: NotifyFrame): void {
+  const t = frameToToast(frame);
+  if (!t) return;
+  toast(t.title, t.body, PIC(t.icon));
+>>>>>>> yellow-hair
 }
 
 /** 申请浏览器通知权限的结果：ok=true 已授予；ok=false 带失败原因（供设置页红字展示） */
@@ -195,6 +222,7 @@ export function notifyFromFrame(frame: unknown): void {
 }
 
 /**
+<<<<<<< HEAD
  * 初始化系统通知引擎（**不做轮询**）：读总开关 + 兜底申请权限 + 跟踪页面聚焦 + 记住会话跳转器。
  * 帧的消费改为容器统一轮询 /state 后调 notifyFromFrame（见 pet.ts 的分发）。
  * 返回释放函数（摘掉聚焦监听），由 ctx.effect 在插件卸载时调用。
@@ -202,6 +230,13 @@ export function notifyFromFrame(frame: unknown): void {
  */
 export function initNotify(navigator?: SessionNavigator): () => void {
   sessionNavigator = navigator;
+=======
+ * 初始化系统通知引擎（**不做轮询**）：读总开关 + 兜底申请权限 + 跟踪页面聚焦。
+ * 帧的消费改为容器统一轮询 /state 后调 notifyFromFrame（见 pet.ts 的分发）。
+ * 返回释放函数（摘掉聚焦监听），由 ctx.effect 在插件卸载时调用。
+ */
+export function initNotify(): () => void {
+>>>>>>> yellow-hair
   // 总开关读成品配置（拉取失败不阻塞，默认开启）；之后由设置页保存后 reloadNotifications 重读
   void readNotificationsEnabled().then((enabled) => {
     notifyEnabled = enabled;

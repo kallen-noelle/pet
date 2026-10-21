@@ -1,11 +1,17 @@
 /**
  * 点播动画（`POST /dsh-pet-7340/anim`）的决策层单测。
  *
+<<<<<<< HEAD
  * 契约核心有两条（issue #122 第 1 条后是**两种形态**）：
  *   name = 名字必须在菜单能点到的集合里——播放端"名字即文件名"，播不存在的动画只会静默失败
  *     （404 → 加载失败 → 表现为"点了没反应"），所以这条校验必须钉死；
  *   url  = 第三方自带的素材地址，**不查池**，但必须是 http/https 的完整 URL。
  * 两者二选一，由本模块判定。本模块只依赖配置，可完全离线测。
+=======
+ * 契约核心是"名字必须在菜单能点到的集合里"——播放端"名字即文件名"，播不存在的动画只会
+ * 静默失败（404 → 加载失败 → 表现为"点了没反应"），所以这条校验必须钉死。
+ * 本模块只依赖配置，可完全离线测。
+>>>>>>> yellow-hair
  *
  * 用 Node 内置 test runner（node:test），不引入任何 npm 依赖。
  */
@@ -50,7 +56,11 @@ const cfg = {
 
 /** 决策的便捷调用：只覆盖本次关心的参数 */
 const decide = (over: Partial<Parameters<typeof decideAnim>[0]> = {}) =>
+<<<<<<< HEAD
   decideAnim({ cfg, requested: 'main', name: '东张西望', url: undefined, ...over });
+=======
+  decideAnim({ cfg, requested: 'main', active: '', name: '东张西望', ...over });
+>>>>>>> yellow-hair
 
 describe('animationNames —— 与右键菜单同一份动画集合', () => {
   test('七个池全部收到（菜单树取的就是这些）', () => {
@@ -137,12 +147,25 @@ describe('decideAnim —— 宠物选择', () => {
     assert.equal(d.ok === true && d.petId, 'test1');
   });
 
+<<<<<<< HEAD
   test('不指定 pet → pet-required（缺省链已删除：绝不退到"当前桌宠"/列表第一只）', () => {
     for (const empty of ['', '   ']) {
       const d = decide({ requested: empty });
       assert.equal(d.ok, false);
       assert.equal(d.ok === false && d.reason, 'pet-required');
     }
+=======
+  test('不指定 pet → 落到当前桌宠（active）', () => {
+    const d = decide({ requested: '', active: 'test1' });
+    assert.equal(d.ok, true);
+    assert.equal(d.ok === true && d.petId, 'test1');
+  });
+
+  test('不指定且没有当前桌宠 → 兜底 main', () => {
+    const d = decide({ requested: '', active: '' });
+    assert.equal(d.ok, true);
+    assert.equal(d.ok === true && d.petId, 'main');
+>>>>>>> yellow-hair
   });
 
   test('指定不存在的宠物 → unknown-pet', () => {
@@ -170,6 +193,7 @@ describe('decideAnim —— 宠物选择', () => {
     assert.equal(decide({ cfg: two, requested: 'pack1', name: '包池动画' }).ok, true);
   });
 });
+<<<<<<< HEAD
 
 describe('decideAnim —— url 形态（第三方自带素材，issue #122 第 1 条）', () => {
   const URL_OK = 'https://cdn.example.com/拉侧栏.webm';
@@ -274,3 +298,5 @@ describe('decideAnim —— facing（朝向，可选）', () => {
     assert.equal(decide({ name: undefined, url: undefined, facing: 'left' }).ok, false);
   });
 });
+=======
+>>>>>>> yellow-hair

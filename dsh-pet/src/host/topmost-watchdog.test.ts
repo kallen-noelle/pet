@@ -28,6 +28,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const helper = '../../runtime/electron-helper/';
+<<<<<<< HEAD
 const {
   TOPMOST_WATCHDOG_TICK_MS,
   TOPMOST_REASSERT_MS,
@@ -35,6 +36,11 @@ const {
   shouldReassertTopmost,
   topmostLevel,
 } = require(helper + 'topmost-watchdog.js');
+=======
+const { TOPMOST_WATCHDOG_TICK_MS, TOPMOST_REASSERT_MS, shouldReassertTopmost } = require(
+  helper + 'topmost-watchdog.js',
+);
+>>>>>>> yellow-hair
 
 /** 包内文件源码（守卫用；相对 src/host/ 解析） */
 const readSource = (rel: string): string => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
@@ -42,12 +48,15 @@ const readSource = (rel: string): string => readFileSync(fileURLToPath(new URL(r
 /** 一份"窗口健在、可见、没被挂起"的基准状态 */
 const alive = { destroyed: false, visible: true, paused: false };
 
+<<<<<<< HEAD
 test('macOS 为截图浮层让位，其它平台保持原有置顶层级', () => {
   assert.equal(topmostLevel('darwin'), 'floating');
   assert.equal(topmostLevel('win32'), 'screen-saver');
   assert.equal(topmostLevel('linux'), 'screen-saver');
 });
 
+=======
+>>>>>>> yellow-hair
 describe('shouldReassertTopmost —— 到点才重钉，每拍都问一次', () => {
   test('未到点不钉，到点钉', () => {
     assert.equal(
@@ -94,6 +103,7 @@ describe('shouldReassertTopmost —— 到点才重钉，每拍都问一次', ()
     assert.ok(TOPMOST_WATCHDOG_TICK_MS > 0, '节拍必须是正数');
     assert.ok(TOPMOST_WATCHDOG_TICK_MS < TOPMOST_REASSERT_MS, '节拍 >= 重钉间隔时判定退化成每拍都钉，纯函数也就白写了');
   });
+<<<<<<< HEAD
 
   test('总开关关闭时，哪怕早就到点也一次都不钉', () => {
     const longDue = { ...alive, nowMs: 1000 + TOPMOST_REASSERT_MS * 10, lastAssertMs: 1000 };
@@ -109,6 +119,8 @@ describe('shouldReassertTopmost —— 到点才重钉，每拍都问一次', ()
       '总开关必须是布尔值（不能是 undefined/字符串，否则早退判断会放行）',
     );
   });
+=======
+>>>>>>> yellow-hair
 });
 
 describe('源码守卫 —— 置顶看门狗必须在 main.js 里按这套规则接线', () => {
@@ -120,6 +132,7 @@ describe('源码守卫 —— 置顶看门狗必须在 main.js 里按这套规�
     return m[1];
   };
 
+<<<<<<< HEAD
   test('建窗时那次置顶不能删，且看门狗使用相同的平台层级', () => {
     assert.ok(
       /win\.setAlwaysOnTop\(true, topmostLevel\(process\.platform\)\);/.test(main),
@@ -127,6 +140,15 @@ describe('源码守卫 —— 置顶看门狗必须在 main.js 里按这套规�
     );
     assert.ok(
       (main.match(/win\.setAlwaysOnTop\(true, topmostLevel\(process\.platform\)\)/g) ?? []).length >= 2,
+=======
+  test('建窗时那次置顶不能删，且看门狗走的是同一个 API（screen-saver 档）', () => {
+    assert.ok(
+      /win\.setAlwaysOnTop\(true, 'screen-saver'\);/.test(main),
+      '建窗时必须先置顶一次（看门狗只负责复查，不能当成唯一置顶来源）',
+    );
+    assert.ok(
+      (main.match(/win\.setAlwaysOnTop\(true, 'screen-saver'\)/g) ?? []).length >= 2,
+>>>>>>> yellow-hair
       '看门狗必须再钉一次同档位（HWND_TOPMOST 落带靠它；moveTop 的 HWND_TOP 对已沉底窗口无效）',
     );
     assert.ok(
@@ -138,7 +160,10 @@ describe('源码守卫 —— 置顶看门狗必须在 main.js 里按这套规�
 
   test('看门狗按判定函数 + 命名节拍运行，并在窗口关闭时停掉', () => {
     assert.ok(/shouldReassertTopmost\(/.test(main), '必须调用纯判定');
+<<<<<<< HEAD
     assert.ok(/TOPMOST_WATCHDOG_ENABLED/.test(watchdogBody()), '判定必须显式传入总开关，否则开关改了也不生效');
+=======
+>>>>>>> yellow-hair
     const body = watchdogBody();
     assert.ok(/win\.isDestroyed\(\)/.test(body), '判定必须带上"窗口已销毁"');
     assert.ok(/win\.isVisible\(\)/.test(body), '判定必须带上"窗口可见"（未 show 时不钉）');

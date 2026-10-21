@@ -200,13 +200,18 @@ export const springStep = (
   power: number = DEFAULT_THROW_POWER,
 ): number => v + ((target - x) * SPRING_K - v * SPRING_C) * power * dt;
 
+<<<<<<< HEAD
 /** 软钳速：`cap*(1-e^(-s/cap))`，任意速度下单调可区分、渐近不超过 cap。
  *  导出供抛掷指令（`POST /throw` 的 power）复用——接口抛掷与拖拽甩抛走同一条限速，手感一致。 */
 export const softClampSpeed = (speed: number): number => {
+=======
+const softClampSpeed = (speed: number): number => {
+>>>>>>> yellow-hair
   if (speed <= 0) return 0;
   return MAX_THROW_SPEED * (1 - Math.exp(-speed / MAX_THROW_SPEED));
 };
 
+<<<<<<< HEAD
 /** 抛掷指令的力度锚点：`power = 1.0` 对应软钳速**前**的 1200 px/s
  *  （实际初速会被软上限压到约 1021 px/s，见 softClampSpeed）。 */
 export const THROW_SPEED_ANCHOR = 1200;
@@ -227,6 +232,8 @@ export const throwVelocity = (angleDeg: number, power: number): { vx: number; vy
   return { vx: Math.cos(rad) * speed, vy: -Math.sin(rad) * speed };
 };
 
+=======
+>>>>>>> yellow-hair
 /**
  * 由拖拽轨迹估算松手初速 (vx, vy)，px/s。
  * 方向：窗口首末端点位移方向（抗抖）。大小：端点平均与峰值按 PEAK_WEIGHT 加权，

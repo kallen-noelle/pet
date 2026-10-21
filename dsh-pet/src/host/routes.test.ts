@@ -198,10 +198,16 @@ describe('/state + /balance —— 轮询统一状态与余额动作端点', () 
       sections: Record<string, { counter: number; data: unknown }>;
       pets: Record<string, unknown>;
     };
+<<<<<<< HEAD
     assert.deepEqual(Object.keys(body.sections).sort(), ['balance', 'config', 'notify', 'workStatus']);
     assert.equal(body.sections.balance.counter, 0, '没人写过时 counter=0（前端首拉当基线）');
     assert.equal(body.sections.balance.data, null);
     assert.equal(body.sections.config.data, null, '配置变更信号也没人写过（counter=0 / data=null）');
+=======
+    assert.deepEqual(Object.keys(body.sections).sort(), ['balance', 'notify', 'workStatus']);
+    assert.equal(body.sections.balance.counter, 0, '没人写过时 counter=0（前端首拉当基线）');
+    assert.equal(body.sections.balance.data, null);
+>>>>>>> yellow-hair
     assert.deepEqual(body.pets, {});
   });
 
@@ -209,6 +215,7 @@ describe('/state + /balance —— 轮询统一状态与余额动作端点', () 
     assert.equal((await call('/dsh-pet-7340/state', 'POST')).status, 405);
   });
 
+<<<<<<< HEAD
   test('只传 since / 只传 timeout → 400（成对必填，与 /playback 的 wait/timeout 同一套约定）', async () => {
     assert.equal((await call('/dsh-pet-7340/state?since=0')).status, 400);
     assert.equal((await call('/dsh-pet-7340/state?timeout=1000')).status, 400);
@@ -251,6 +258,8 @@ describe('/state + /balance —— 轮询统一状态与余额动作端点', () 
     assert.ok(elapsed >= 180, `应当真的挂起约 200ms，实测 ${elapsed}ms`);
   });
 
+=======
+>>>>>>> yellow-hair
   test('POST /balance 是动作端点：只回 { ok: true }，不返回余额数据', async () => {
     const r = await call('/dsh-pet-7340/balance', 'POST');
     assert.equal(r.status, 200);
@@ -339,6 +348,7 @@ describe('/broadcast —— 第三方投喂（POST 写入端点，issue #76）',
     assert.equal(body.ok, false, '读不到配置绝不能回 ok:true——否则调用方以为气泡已投喂');
     assert.equal(body.reason, 'generate-error');
   });
+<<<<<<< HEAD
 
   test('非法 duration → bad-request，且**在读配置之前**就短路（不是 generate-error）', async () => {
     // 与本文件里"配置不可达"这一前提配合：若 duration 校验被放到读配置之后，
@@ -376,6 +386,8 @@ describe('/bubble/clear —— 清空气泡（POST 写入端点，issue #122 第
     assert.equal(body.ok, false, '读不到配置绝不能回 ok:true——否则调用方以为气泡已收起');
     assert.equal(body.reason, 'generate-error');
   });
+=======
+>>>>>>> yellow-hair
 });
 
 describe('/anim —— 点播动画（POST 写入端点）', () => {
@@ -402,6 +414,7 @@ describe('/anim —— 点播动画（POST 写入端点）', () => {
   });
 });
 
+<<<<<<< HEAD
 describe('/position + /throw —— 位置与抛掷指令（POST 写入端点）', () => {
   // 覆盖范围同 /anim：源码形态下 PACKAGE_ROOT 解析为 <pkg>/src，readAllConfig 必然抛错，
   // 因此"成功写进 pets.<id>.position / pets.<id>.throw"那条路径在这里测不了（参数校验、坐标夹取
@@ -445,6 +458,8 @@ describe('/position + /throw —— 位置与抛掷指令（POST 写入端点）
   });
 });
 
+=======
+>>>>>>> yellow-hair
 describe('thumb 路由 —— 合法路径照常（修复不得误杀）', () => {
   test('pet pack 自己的素材：中文名 petId 正常返回', async () => {
     const r = await call(`/dsh-pet-7340/thumb/${encodeURIComponent(CN_PET)}/test.webm`);
@@ -570,6 +585,7 @@ describe('pic/memes 路由 —— 素材根不得当路径片段（与 thumb 同
     assert.equal(r.body.includes(SECRET), false);
   });
 });
+<<<<<<< HEAD
 
 describe('pet 必填 —— 缺省一律 pet-required（issue #122 第 1 条：绝不退到列表第一只）', () => {
   // 与 /broadcast 的 duration 同一处境：pet 空串**不必读配置**就能拒，所以这一组在"配置不可达"
@@ -723,3 +739,5 @@ describe('/pet-display —— 业务失败一律 200 + ok:false（不用 400/404
     assert.equal(body.reason, 'bad-request');
   });
 });
+=======
+>>>>>>> yellow-hair

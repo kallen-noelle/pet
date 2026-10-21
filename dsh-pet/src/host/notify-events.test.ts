@@ -2,8 +2,12 @@
  * host 通知帧生成纯逻辑单元测试 —— 钉住「DSH 宿主事件 → shared/notify.ts 同契约帧」：
  *   turn/end（completed/error/max-tokens 弹，aborted 等不弹）、approval/asked、
  *   tool/call（ask_user_question 解析 questions）、agent/error（message 提取），
+<<<<<<< HEAD
  *   以及会话门 shouldNotifySession（子代理不发、普通 fork 照发）
  *   与活动门（issue #114：只拦「对话完成」+ 判据 hasBlockingActivity 的取舍）。
+=======
+ *   以及会话门 shouldNotifySession（子代理不发、普通 fork 照发）。
+>>>>>>> yellow-hair
  *
  * 跑法：node --experimental-strip-types --test src/host/notify-events.test.ts
  */
@@ -12,11 +16,16 @@ import assert from 'node:assert/strict';
 
 import {
   agentErrorFrame,
+<<<<<<< HEAD
   hasBlockingActivity,
   isCompletionTurnEnd,
   parseToolQuestions,
   reduceNotifyFrame,
   sessionIdOf,
+=======
+  parseToolQuestions,
+  reduceNotifyFrame,
+>>>>>>> yellow-hair
   shouldNotifySession,
   turnEndNotifyKind,
 } from './notify-events.ts';
@@ -200,6 +209,7 @@ describe('shouldNotifySession —— 会话门（issue #82）', () => {
     assert.equal(shouldNotifySession({ header: { delegationDepth: 0 } }), true);
   });
 });
+<<<<<<< HEAD
 
 describe('isCompletionTurnEnd —— 活动门只拦「对话完成」（issue #114）', () => {
   test('turn/end + completed → true（唯一需要先确认空闲的帧）', () => {
@@ -263,3 +273,5 @@ describe('hasBlockingActivity —— 活动门判据（issue #114）', () => {
     assert.equal(hasBlockingActivity([{ kind: 'something-new' }]), false);
   });
 });
+=======
+>>>>>>> yellow-hair

@@ -8,6 +8,7 @@
  *
  * 形状：
  *   {
+<<<<<<< HEAD
  *     counter: 1755000000007,   // 全局写入版本 = 最后一次写入的编号（顶层，不是叶子）
  *     sections: { balance: {counter,data}, workStatus: {…}, notify: {…}, config: {…} },  // 全局，所有端共享
  *     pets: { <宠物id>: { say: {…}, anim: {…}, position: {…}, throw: {…}, lock: {…} } } // 每只宠物各自一份
@@ -21,6 +22,12 @@
  *   等待者只挂在"任意叶子被写过"这一个条件上，所以是**全局集合**：一次写入唤醒所有人
  *   （桌面是一窗一宠、各自一个轮询循环，因此这里是 N 倍放大——有意为之，换的是实现的简单）。
  *
+=======
+ *     sections: { balance: {counter,data}, workStatus: {…}, notify: {…} },  // 全局，所有端共享
+ *     pets: { <宠物id>: { say: {counter,data} } }                           // 每只宠物各自一份
+ *   }
+ *
+>>>>>>> yellow-hair
  * counter 语义（整个设计的地基，改之前先读完这段）：
  *   - **每次写入都必须更新 counter**，前端靠"counter 变了"判断要不要渲染；
  *   - 取值 `Date.now()`，并保证**严格递增**（同一毫秒内连写两次也会 +1）——
@@ -39,6 +46,7 @@ export interface StateLeaf {
   data: unknown;
 }
 
+<<<<<<< HEAD
 /** 全局段（所有端共享一份）。
  *  `config` 是**纯信号叶子**：`data` 恒为 `{}`，只看 `counter`——它变了就说明配置被写过，
  *  消费端据此重拉 `GET /config`（配置本体太大，不能塞进每秒一次的 /state）。
@@ -59,10 +67,21 @@ export type PetLeafName = 'say' | 'anim' | 'position' | 'throw' | 'lock';
  *  它是**顶层的**、不是叶子：调用方拿它当 `?since=` 回传，用来表达"我手里这份是哪个版本"。 */
 export interface PollState {
   counter: number;
+=======
+/** 全局段（所有端共享一份） */
+export type SectionName = 'balance' | 'workStatus' | 'notify';
+
+/** 每宠物段（say = 要说的话；anim = 要播的动画名） */
+export type PetLeafName = 'say' | 'anim';
+
+/** S 的完整形态（GET /state 的响应体） */
+export interface PollState {
+>>>>>>> yellow-hair
   sections: Record<SectionName, StateLeaf>;
   pets: Record<string, Record<PetLeafName, StateLeaf>>;
 }
 
+<<<<<<< HEAD
 /**
  * `?timeout=` 上限（ms）：挂起等待的封顶时长，防止调用方把连接挂死。
  * 与 ./playback 的 `MAX_PLAYBACK_WAIT_MS` **同值同因**：DSH WebServer 是否对长期持有的响应
@@ -118,6 +137,11 @@ interface Waiter {
   timer: ReturnType<typeof setTimeout> | undefined;
 }
 
+=======
+/** 空叶子：counter=0 表示"从未写过"——前端首拉把它当基线，之后 counter 变化才渲染 */
+const emptyLeaf = (): StateLeaf => ({ counter: 0, data: null });
+
+>>>>>>> yellow-hair
 /** 轮询统一状态存储（一个插件实例一个；进程内内存态，重启即空） */
 export class PollStateStore {
   // 用 declare + 构造器赋值（不用类字段初始化器）：类字段会降级出 @oxc-project/runtime 外部
@@ -126,6 +150,7 @@ export class PollStateStore {
   declare private last: number;
   declare private readonly sections: Record<SectionName, StateLeaf>;
   declare private readonly pets: Map<string, Record<PetLeafName, StateLeaf>>;
+<<<<<<< HEAD
   /** 挂起的等待者。**全局集合**：任意叶子被写过都唤醒他们（见文件头的放大效应说明） */
   declare private readonly waiters: Set<Waiter>;
 
@@ -134,6 +159,13 @@ export class PollStateStore {
     this.sections = { balance: emptyLeaf(), workStatus: emptyLeaf(), notify: emptyLeaf(), config: emptyLeaf() };
     this.pets = new Map();
     this.waiters = new Set();
+=======
+
+  constructor() {
+    this.last = 0;
+    this.sections = { balance: emptyLeaf(), workStatus: emptyLeaf(), notify: emptyLeaf() };
+    this.pets = new Map();
+>>>>>>> yellow-hair
   }
 
   /** 下一个 counter：`Date.now()` 与「上一个 +1」取大——单调、不回退、同毫秒不重复 */
@@ -143,11 +175,16 @@ export class PollStateStore {
   }
 
   /**
+<<<<<<< HEAD
    * 写一个全局叶子（余额 / 工作状态 / 通知 / 配置变更信号）。
+=======
+   * 写一个全局叶子（余额 / 工作状态 / 通知）。
+>>>>>>> yellow-hair
    * 每次都整体替换叶子对象（不原地改字段），保证 `read()` 拿到的引用不会半新半旧。
    */
   writeSection(name: SectionName, data: unknown): void {
     this.sections[name] = { counter: this.next(), data };
+<<<<<<< HEAD
     this.wakeWaiters();
   }
 
@@ -160,6 +197,18 @@ export class PollStateStore {
     }
     entry[leaf] = { counter: this.next(), data };
     this.wakeWaiters();
+=======
+  }
+
+  /** 写一只宠物的叶子（宠物条目不存在则自动建立，两个槽位一起建好，形状恒定） */
+  writePet(petId: string, leaf: PetLeafName, data: unknown): void {
+    let entry = this.pets.get(petId);
+    if (!entry) {
+      entry = { say: emptyLeaf(), anim: emptyLeaf() };
+      this.pets.set(petId, entry);
+    }
+    entry[leaf] = { counter: this.next(), data };
+>>>>>>> yellow-hair
   }
 
   /**
@@ -168,6 +217,7 @@ export class PollStateStore {
    * 所以消费端不会读到写了一半的叶子。
    */
   read(): PollState {
+<<<<<<< HEAD
     return { counter: this.last, sections: { ...this.sections }, pets: Object.fromEntries(this.pets) };
   }
 
@@ -234,5 +284,8 @@ export class PollStateStore {
       waiter.timer = undefined;
     }
     this.waiters.delete(waiter);
+=======
+    return { sections: { ...this.sections }, pets: Object.fromEntries(this.pets) };
+>>>>>>> yellow-hair
   }
 }

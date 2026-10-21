@@ -334,6 +334,7 @@ describe('anchorPixel / planMove —— 角落与漫游不进空洞', () => {
     assert.ok(Math.abs(plan.targetRatio * 3795 - 2800) < 1);
   });
 
+<<<<<<< HEAD
   test('锁定语义：areas 只给当前那块屏 ⇒ 同高度跨屏的那一步被拒', () => {
     // 与上一条同一个起点 / 距离 / 方向：并集下会跨到副屏，只给主屏时必须被拒
     const common = {
@@ -355,6 +356,8 @@ describe('anchorPixel / planMove —— 角落与漫游不进空洞', () => {
     assert.ok(planMove({ ...common, dir: 1, areas: [SIDE] }), '锁定副屏：落点在副屏内 ⇒ 可达');
   });
 
+=======
+>>>>>>> yellow-hair
   test('不传 areas 时退化为旧的单矩形判定', () => {
     const base = {
       cx: 500,

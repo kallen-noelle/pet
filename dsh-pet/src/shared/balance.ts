@@ -27,8 +27,16 @@ export interface RawBalanceResult {
     weeklyCapUsd?: unknown;
     monthlyCapUsd?: unknown;
     rollingLabel?: unknown;
+<<<<<<< HEAD
     /** money：多币种钱包数组（每项 `{currency,total,granted,toppedUp,fullBalance?}`） */
     wallets?: unknown;
+=======
+    currency?: unknown;
+    total?: unknown;
+    granted?: unknown;
+    toppedUp?: unknown;
+    fullBalance?: unknown;
+>>>>>>> yellow-hair
     tier?: unknown;
   };
 }
@@ -60,12 +68,26 @@ export interface BalanceView {
   monthlyCapUsd?: number;
   /** 滚动窗展示名（服务商自报，如 `5h`）；缺省回落 DEFAULT_ROLLING_LABEL */
   rollingLabel?: string;
+<<<<<<< HEAD
   /** money：多币种钱包（每项一个币种）。展示层据此选符号、过滤为 0 的币种、拼气泡 */
   wallets?: MoneyWalletView[];
+=======
+  /** money：余额金额（字符串，与接口一致） */
+  currency?: string;
+  total?: string;
+  granted?: string;
+  toppedUp?: string;
+  /**
+   * money：档位基准（同 currency 单位）。余额 ≥ 该值视为未消耗。
+   * 缺省 = 该服务商不给基准 → 不折算百分比、不播档位动画（不替它猜一个基准）。
+   */
+  fullBalance?: string;
+>>>>>>> yellow-hair
   /** money：计价档位装饰；缺省 = 渲染成不带峰谷的「余额 ¥x.xx」 */
   tier?: PricingTier;
 }
 
+<<<<<<< HEAD
 /** 一个币种的余额（money 形态）。`fullBalance` 缺省 = 该币种没有基准，不参与档位折算 */
 export interface MoneyWalletView {
   currency: string;
@@ -75,6 +97,8 @@ export interface MoneyWalletView {
   fullBalance?: string;
 }
 
+=======
+>>>>>>> yellow-hair
 /** 无效（不支持/缺凭证/抓取失败）：显式标记，不静默 */
 export interface BalanceUnavailable {
   provider: string;
@@ -152,6 +176,7 @@ export function toBalanceState(raw: unknown): BalanceState | null {
     };
   }
   if (r.shape === 'money') {
+<<<<<<< HEAD
     // 多币种：每项必须有 currency + total；granted / toppedUp 缺省记 '0.00'（只用于展示分项，
     // 不参与档位），fullBalance 缺省 = 该币种没有基准。结构不合法的项直接丢弃——少一条币种比整拍不渲染好。
     const raw = Array.isArray(d.wallets) ? d.wallets : [];
@@ -171,11 +196,21 @@ export function toBalanceState(raw: unknown): BalanceState | null {
     }
     // 一个钱包都没有 = 认不出响应（host 侧空钱包是按 fetch-error 写的，走到这里说明结构坏了）
     if (wallets.length === 0) return null;
+=======
+>>>>>>> yellow-hair
     return {
       provider,
       shape: 'money',
       ok: true,
+<<<<<<< HEAD
       wallets,
+=======
+      currency: typeof d.currency === 'string' ? d.currency : undefined,
+      total: typeof d.total === 'string' ? d.total : undefined,
+      granted: typeof d.granted === 'string' ? d.granted : undefined,
+      toppedUp: typeof d.toppedUp === 'string' ? d.toppedUp : undefined,
+      fullBalance: typeof d.fullBalance === 'string' ? d.fullBalance : undefined,
+>>>>>>> yellow-hair
       tier: d.tier === 'peak' || d.tier === 'idle' ? d.tier : undefined,
     };
   }
@@ -190,6 +225,7 @@ export function toBalanceState(raw: unknown): BalanceState | null {
  */
 export function balancePercent(v: BalanceView): number | undefined {
   if (v.shape === 'money') {
+<<<<<<< HEAD
     // 多币种：各币种按**自己的基准**算「剩余比例」，再相加折算成已用百分比。
     // 不同币种不能相加金额，但比例是无量纲的 —— 所以不需要汇率：CNY/20 + USD/5 直接叠。
     let remaining = 0;
@@ -204,6 +240,15 @@ export function balancePercent(v: BalanceView): number | undefined {
     }
     if (based === 0) return undefined; // 一个带基准的币种都没有 → 不播档位
     return Math.max(0, Math.min(100, 100 - remaining * 100)); // 折算为已用百分比
+=======
+    const total = Number(v.total);
+    const full = Number(v.fullBalance);
+    if (!Number.isFinite(total)) return undefined; // 金额非法（非数字）：不触发（上层校验已兜底，此处双保险）
+    if (!Number.isFinite(full) || full <= 0) return undefined; // 无基准：该服务商不给档位语义
+    // 负数 = 透支，与 0 等价按「已用完」折算：-0.02 → 剩余 0 → 已用 100%（播「分文不剩」档）
+    const remaining = (Math.max(0, total) / full) * 100; // 剩余百分比 0~100+
+    return Math.max(0, Math.min(100, 100 - remaining)); // 折算为已用百分比
+>>>>>>> yellow-hair
   }
   // windows：三窗口取最大（只有月窗口时就是它自己）
   return Math.max(v.rolling ?? 0, v.weekly ?? 0, v.monthly ?? 0);
@@ -378,6 +423,7 @@ export function balanceBubbleView(state: BalanceState): BalanceBubbleRow[] {
       }
       return [{ role: 'label', text: '额度数据不可用' }];
     }
+<<<<<<< HEAD
     // money：多币种。只显示 `total !== 0` 的币种（**负数要显示**——透支是真的欠钱；正好 0 的不占地方），
     // CNY 优先，用符号拼、`/` 分隔；全都为 0 时兜底显示主币种 ¥0.00（否则气泡会空一行）。
     const visible = (state.wallets ?? [])
@@ -385,6 +431,11 @@ export function balanceBubbleView(state: BalanceState): BalanceBubbleRow[] {
       .sort((a, b) => (a.currency === 'CNY' ? 0 : 1) - (b.currency === 'CNY' ? 0 : 1));
     const amount =
       visible.length > 0 ? visible.map((w) => (w.currency === 'USD' ? '$' : '¥') + w.total).join('/') : '¥0.00';
+=======
+    // money：币种符号由数据带出（CNY → ¥，USD → $）
+    const symbol = state.currency === 'USD' ? '$' : '¥';
+    const amount = symbol + (state.total ?? '-');
+>>>>>>> yellow-hair
     // 档位装饰（峰/谷）只有提供该计价规则的服务商才有；没有就不加括号那一段
     if (!state.tier) return [{ role: 'label', text: '余额 ' + amount }];
     return [

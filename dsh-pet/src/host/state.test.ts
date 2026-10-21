@@ -13,17 +13,27 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
+<<<<<<< HEAD
 import { MAX_STATE_WAIT_MS, parseStateWaitQuery, PollStateStore } from './state.ts';
 
 describe('PollStateStore —— 初始形态', () => {
   test('四个全局叶子都是 {counter:0, data:null}（0 = 从未写过，前端首拉当基线）', () => {
     const s = new PollStateStore().read();
     assert.deepEqual(Object.keys(s.sections).sort(), ['balance', 'config', 'notify', 'workStatus']);
+=======
+import { PollStateStore } from './state.ts';
+
+describe('PollStateStore —— 初始形态', () => {
+  test('三个全局叶子都是 {counter:0, data:null}（0 = 从未写过，前端首拉当基线）', () => {
+    const s = new PollStateStore().read();
+    assert.deepEqual(Object.keys(s.sections).sort(), ['balance', 'notify', 'workStatus']);
+>>>>>>> yellow-hair
     for (const leaf of Object.values(s.sections)) assert.deepEqual(leaf, { counter: 0, data: null });
     assert.deepEqual(s.pets, {});
   });
 });
 
+<<<<<<< HEAD
 describe('PollStateStore —— 配置变更信号（sections.config）', () => {
   test('纯信号叶子：data 恒为 {}，只有 counter 是有效信息', () => {
     const store = new PollStateStore();
@@ -52,6 +62,8 @@ describe('PollStateStore —— 配置变更信号（sections.config）', () => 
   });
 });
 
+=======
+>>>>>>> yellow-hair
 describe('PollStateStore —— 写入与读取', () => {
   test('写全局叶子：counter 变、data 原样', () => {
     const store = new PollStateStore();
@@ -78,6 +90,7 @@ describe('PollStateStore —— 写入与读取', () => {
     assert.equal(store.read().sections.notify.data, null);
   });
 
+<<<<<<< HEAD
   test('宠物条目的五个槽位一起建好（没写过的槽位是 {counter:0, data:null}）', () => {
     const store = new PollStateStore();
     store.writePet('main', 'position', { x: 0.5, y: 0.5, mode: 'spring' });
@@ -101,6 +114,8 @@ describe('PollStateStore —— 写入与读取', () => {
     assert.equal(s.pets.main.position.counter, posCounter, 'position 的 counter 不该被 throw 的写入改动');
   });
 
+=======
+>>>>>>> yellow-hair
   test('叶子整体替换：先读到的引用不会被后续写入改动（半新半旧不可能发生）', () => {
     const store = new PollStateStore();
     store.writeSection('workStatus', { state: 'working' });
@@ -149,6 +164,7 @@ describe('PollStateStore —— counter 必须严格递增（前端唯一的渲�
     assert.ok(counter - before < 1000, 'counter 不该明显超前于墙上时间');
   });
 });
+<<<<<<< HEAD
 
 describe('PollStateStore —— 顶层 counter（整份 S 的版本号）', () => {
   test('从未写过 = 0；写过之后等于最后一次写入的编号', () => {
@@ -314,3 +330,5 @@ describe('PollStateStore.wait —— 挂起等待（长轮询）', () => {
     assert.equal(store.waiterCount(), 0, '不泄漏');
   });
 });
+=======
+>>>>>>> yellow-hair

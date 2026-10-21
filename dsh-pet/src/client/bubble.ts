@@ -14,6 +14,7 @@ import type { ReactNode } from 'react';
 import type { jsx } from 'react/jsx-runtime';
 
 /** 气泡内联样式：白色半透明圆润泡 + 底部小尾巴指向宠物；字体用上首软糖体（本地打包，稳定）。
+<<<<<<< HEAD
  * 尺寸分两类锚点：
  *  - 气泡**盒子**（宽上下限/内边距/圆角/尾巴/阴影/行间距/角标）锚在字号 `--f` 上（em 语义）：
  *    字号调大盒子同步变大，文字永远装得下——不再出现「字长大了、框没长」把文字顶出白底；
@@ -29,11 +30,16 @@ import type { jsx } from 'react/jsx-runtime';
  * 写 width:max-content 后盒子先按内容取宽，再由 max-width 收口（= min(字号口径上限, 包含块 100%)），
  * 「字变大 → 框变宽」才真正生效，且永不超过宠物本身宽度（桌面窗口只比宠物大一圈，超了会被裁）。
  * 断词用 break-word 而非 anywhere：只在整词放不下时才断，不会把 85% / ¥12.34 这类数字拆到两行。 */
+=======
+ * 所有尺寸基于 `--dsh-pet-size`（宠物宽度 px）等比缩放——宠物放大/缩小，气泡跟随。
+ * 系数按默认 462px 设计：21px 字号 → ×0.0455、120px 最小宽 → 0.26、230px 最大宽 → 0.5 等。 */
+>>>>>>> yellow-hair
 const bubbleCss = [
   // 本地字体：/dsh-pet-7340/font/ 由 host 从 assets/fonts 提供；font-display swap 先回退后切换
   '@font-face{font-family:"ShangshouSoftCandy";src:url("/dsh-pet-7340/font/上首软糖体.ttf") format("truetype");font-display:swap;font-weight:400}',
   '.dsh-pet-bubble{position:absolute;left:50%;transform:translateX(-50%);' +
     'bottom:calc(100% - var(--dsh-pet-size)*0.108);' +
+<<<<<<< HEAD
     'width:max-content;min-width:calc(var(--f)*5.7143);max-width:min(calc(var(--f)*10.989),100%);' +
     // 钉死 content-box：宿主页面可能全局设了 border-box，那会让 min/max-width 把内边距也算进去，
     // 内容可用宽度被悄悄缩掉一圈（表现为「明明还有空位却折行」）。桌面端 index.html 同样钉死，两端一致。
@@ -65,6 +71,35 @@ const bubbleCss = [
   '.dsh-pet-bubble .pet-bub-err{color:#d94f3d;font-size:calc(var(--f)*0.7692)}',
   '.dsh-pet-bubble .pet-bub-tag{margin-left:calc(var(--f)*0.2857);font-size:calc(var(--f)*0.4835);color:rgba(43,43,43,.55);border:1px solid rgba(43,43,43,.25);' +
     'border-radius:calc(var(--f)*0.2857);padding:0 calc(var(--f)*0.1978);vertical-align:1px}',
+=======
+    'min-width:calc(var(--dsh-pet-size)*0.26);max-width:calc(var(--dsh-pet-size)*0.5);' +
+    'padding:calc(var(--dsh-pet-size)*0.022) calc(var(--dsh-pet-size)*0.030);' +
+    'border-radius:calc(var(--dsh-pet-size)*0.035);' +
+    'background:rgba(255,255,255,.92);' +
+    'color:#2b2b2b;font-family:"ShangshouSoftCandy","Yuanti SC","YouYuan","幼圆","Comic Sans MS","PingFang SC","Microsoft YaHei",sans-serif;' +
+    'font-size:calc(var(--dsh-pet-size)*0.0455);line-height:1.6;z-index:3;pointer-events:none;' +
+    'box-shadow:0 calc(var(--dsh-pet-size)*0.009) calc(var(--dsh-pet-size)*0.035) rgba(0,0,0,.14),0 1px 3px rgba(0,0,0,.08);' +
+    'backdrop-filter:blur(6px);opacity:0;transition:opacity .25s ease;white-space:nowrap}',
+  // 底部尾巴：小三角指向下方宠物（同样随宠物缩放）
+  '.dsh-pet-bubble::after{content:"";position:absolute;left:50%;bottom:calc(var(--dsh-pet-size)*-0.017);' +
+    'transform:translateX(-50%);border:calc(var(--dsh-pet-size)*0.017) solid transparent;' +
+    'border-top-color:rgba(255,255,255,.92);border-bottom:none}',
+  '.dsh-pet-bubble.is-on{opacity:1}',
+  // 碎碎念变体：字号缩到余额气泡的 0.75（0.0455→0.034）、取消 nowrap 允许换行、
+  // 宽度随文字数量自适应（短句窄框、长句封顶绕行），高度随行数自然增长
+  '.dsh-pet-bubble.dsh-pet-whisper{font-size:calc(var(--dsh-pet-size)*0.034);' +
+    'min-width:calc(var(--dsh-pet-size)*0.10);max-width:calc(var(--dsh-pet-size)*0.5);' +
+    'white-space:normal;overflow-wrap:anywhere}',
+  // 配图（碎碎念/对话共用）：样式在 shared 的 MEME_BUBBLE_CSS（两端同一份，由
+  // createMemeImage 注入）——这里不再重复写一份，避免与桌面端 index.html 走样
+  '.dsh-pet-bubble .pet-bub-title{font-size:calc(var(--dsh-pet-size)*0.035);color:rgba(43,43,43,.6);margin-bottom:calc(var(--dsh-pet-size)*0.009)}',
+  '.dsh-pet-bubble .pet-bub-row{display:flex;justify-content:space-between;gap:calc(var(--dsh-pet-size)*0.030)}',
+  '.dsh-pet-bubble .pet-bub-sub{font-size:calc(var(--dsh-pet-size)*0.035);color:rgba(43,43,43,.6)}',
+  '.dsh-pet-bubble .pet-bub-val{font-variant-numeric:tabular-nums;font-weight:650;color:#1f1f1f}',
+  '.dsh-pet-bubble .pet-bub-err{color:#d94f3d;font-size:calc(var(--dsh-pet-size)*0.035)}',
+  '.dsh-pet-bubble .pet-bub-tag{margin-left:calc(var(--dsh-pet-size)*0.013);font-size:calc(var(--dsh-pet-size)*0.022);color:rgba(43,43,43,.55);border:1px solid rgba(43,43,43,.25);' +
+    'border-radius:calc(var(--dsh-pet-size)*0.013);padding:0 calc(var(--dsh-pet-size)*0.009);vertical-align:1px}',
+>>>>>>> yellow-hair
   // 峰/谷计价档位标注：峰红、谷绿
   '.dsh-pet-bubble .pet-bub-tier{font-weight:700}',
   '.dsh-pet-bubble .pet-bub-tier-peak{color:#e53935}',
@@ -120,7 +155,11 @@ export function makeBalanceBubble(rt: { h: typeof jsx }): (props: { state: Balan
   return function BalanceBubble({ state, on }: { state: BalanceState; on: boolean }) {
     const rows = balanceBubbleView(state);
     // 不可用状态（不支持/缺凭证/抓取失败）是**多行文字说明**：套用碎碎念的换行变体
+<<<<<<< HEAD
     // （字号缩到 0.75、宽度下限更窄，多行说明更紧凑；折行现在已是气泡的通用行为）
+=======
+    // （余额气泡默认 white-space:nowrap，长文案会直接顶出宠物宽度）
+>>>>>>> yellow-hair
     const wrap = state.ok ? '' : ' dsh-pet-whisper';
     return h('div', {
       className: 'dsh-pet-bubble' + wrap + (on ? ' is-on' : ''),
@@ -135,6 +174,7 @@ export function makeBalanceBubble(rt: { h: typeof jsx }): (props: { state: Balan
  * 内容来自 src/shared 的 whisperBubbleView（与桌面模式完全一致）。
  * image：配图名称（配置 memes 的键），有值则在文字上方渲染该表情包；
  *        图片样式取自 shared 的 MEME_BUBBLE_CSS（两端同一份，这里只声明式建节点）。
+<<<<<<< HEAD
  * url：配图的另一种形态（第三方自带的完整地址），**与 image 二选一**（host 判定层保证），
  *        有值就直接当 img.src 用、不再拼表情包路径（issue #122 第 1 条）。
  * assetRoot：**只在 image 形态下有意义**——素材根（= 该宠物的条目 key），决定图片去哪个表情包
@@ -143,6 +183,14 @@ export function makeBalanceBubble(rt: { h: typeof jsx }): (props: { state: Balan
 export function makeWhisperBubble(rt: {
   h: typeof jsx;
 }): (props: { text: string; image?: string; url?: string; assetRoot?: string; on: boolean }) => ReactNode {
+=======
+ * assetRoot：素材根（= 该宠物的条目 key），决定图片去哪个表情包目录链取
+ *        （种类独占 pet/<名>-memes/ → 用户目录 → 包内），与动画素材同一套归属语义。
+ */
+export function makeWhisperBubble(rt: {
+  h: typeof jsx;
+}): (props: { text: string; image?: string; assetRoot?: string; on: boolean }) => ReactNode {
+>>>>>>> yellow-hair
   const { h } = rt;
   injectBubbleCss();
   injectMemeBubbleCss();
@@ -150,18 +198,25 @@ export function makeWhisperBubble(rt: {
   return function WhisperBubble({
     text,
     image,
+<<<<<<< HEAD
     url,
+=======
+>>>>>>> yellow-hair
     assetRoot,
     on,
   }: {
     text: string;
     image?: string;
+<<<<<<< HEAD
     url?: string;
+=======
+>>>>>>> yellow-hair
     assetRoot?: string;
     on: boolean;
   }) {
     const rows = whisperBubbleView({ ok: true, text, ts: 0 });
     const key = String(image ?? '').trim();
+<<<<<<< HEAD
     const href = String(url ?? '').trim();
     // 配图两种形态二选一（host 判定层保证）：url = 第三方自带的完整地址，直接用；image = 该条目
     // 表情包池内的名称，按素材根拼路径。判别位在字段名上，不靠 startsWith('http') 嗅探
@@ -170,14 +225,25 @@ export function makeWhisperBubble(rt: {
     return h('div', {
       className: 'dsh-pet-bubble dsh-pet-whisper' + (src ? ' ' + MEME_BUBBLE_CLASS : '') + (on ? ' is-on' : ''),
       children: src
+=======
+    return h('div', {
+      className: 'dsh-pet-bubble dsh-pet-whisper' + (key ? ' ' + MEME_BUBBLE_CLASS : '') + (on ? ' is-on' : ''),
+      children: key
+>>>>>>> yellow-hair
         ? [
             h('img', {
               key: 'img',
               className: MEME_IMG_CLASS,
+<<<<<<< HEAD
               // 名称形态：基址是本页 origin 下的路由前缀（与上面 @font-face 同一个字面量）；
               // url 形态：src 就是那个完整地址，与本页 origin 无关
               src,
               alt: key || href,
+=======
+              // 浏览器端基址就是本页 origin 下的路由前缀（与上面 @font-face 同一个字面量）
+              src: memeImageUrl(key, '/dsh-pet-7340', assetRoot),
+              alt: key,
+>>>>>>> yellow-hair
             }),
             rowsToNodes(h, rows),
           ]

@@ -98,7 +98,11 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       provider: 'deepseek-official',
       ok: true,
       shape: 'money',
+<<<<<<< HEAD
       wallets: [{ currency: 'CNY', total: '8.79', granted: '0.00', toppedUp: '8.79' }],
+=======
+      total: '8.79',
+>>>>>>> yellow-hair
       tier: 'idle',
     });
     assert.equal(ds[0]?.text, '余额（');
@@ -111,7 +115,12 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       provider: 'some-wallet',
       ok: true,
       shape: 'money',
+<<<<<<< HEAD
       wallets: [{ currency: 'CNY', total: '8.79', granted: '0.00', toppedUp: '8.79' }],
+=======
+      currency: 'CNY',
+      total: '8.79',
+>>>>>>> yellow-hair
     });
     assert.deepEqual(rows, [{ role: 'label', text: '余额 ¥8.79' }]);
   });
@@ -135,7 +144,11 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       provider: 'deepseek-official',
       ok: true,
       shape: 'money',
+<<<<<<< HEAD
       wallets: [{ currency: 'CNY', total: '8.79', granted: '0.00', toppedUp: '8.79' }],
+=======
+      total: '8.79',
+>>>>>>> yellow-hair
       tier: 'idle',
     });
     // 账号路由：同一 shape、同一结构
@@ -143,7 +156,12 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       provider: 'deepseek-account',
       ok: true,
       shape: 'money',
+<<<<<<< HEAD
       wallets: [{ currency: 'CNY', total: '9.99', granted: '0.00', toppedUp: '9.99' }],
+=======
+      currency: 'CNY',
+      total: '9.99',
+>>>>>>> yellow-hair
       tier: 'idle',
     });
     assert.deepEqual(
@@ -159,7 +177,12 @@ describe('balanceBubbleView —— 不可用状态必须给出可读的文字说
       provider: 'deepseek-account',
       ok: true,
       shape: 'money',
+<<<<<<< HEAD
       wallets: [{ currency: 'USD', total: '12.50', granted: '0.00', toppedUp: '12.50' }],
+=======
+      currency: 'USD',
+      total: '12.50',
+>>>>>>> yellow-hair
       tier: 'idle',
     });
     assert.equal(usd[2]?.text, '）$12.50');
@@ -328,6 +351,7 @@ describe('money —— 档位基准由数据带出（展示层不再写死任何
     provider: 'some-wallet',
     shape: 'money',
     ok: true,
+<<<<<<< HEAD
     wallets: [
       {
         currency: 'CNY',
@@ -337,6 +361,10 @@ describe('money —— 档位基准由数据带出（展示层不再写死任何
         ...(fullBalance === undefined ? {} : { fullBalance }),
       },
     ],
+=======
+    total,
+    fullBalance,
+>>>>>>> yellow-hair
   });
 
   test('基准 20：余额 20 → 0%，10 → 50%，0 → 100%，负数按已用完', () => {
@@ -359,6 +387,7 @@ describe('money —— 档位基准由数据带出（展示层不再写死任何
     assert.equal(balancePercent(view('20', 'abc')), undefined);
   });
 
+<<<<<<< HEAD
   test('多币种：各币种按自己的基准算剩余比例再叠加（不需要汇率）', () => {
     const multi = (cny: string, usd: string): BalanceView => ({
       provider: 'deepseek-account',
@@ -387,10 +416,14 @@ describe('money —— 档位基准由数据带出（展示层不再写死任何
   });
 
   test('toBalanceState：money 叶子带出钱包数组与档位装饰；非法档位值视为没给', () => {
+=======
+  test('toBalanceState：money 叶子带出基准与档位装饰；非法档位值视为没给', () => {
+>>>>>>> yellow-hair
     const s = toBalanceState({
       ok: true,
       provider: 'some-wallet',
       shape: 'money',
+<<<<<<< HEAD
       data: {
         wallets: [{ currency: 'CNY', total: '8.79', granted: '1.00', toppedUp: '7.79', fullBalance: '20' }],
         tier: 'peak',
@@ -402,10 +435,18 @@ describe('money —— 档位基准由数据带出（展示层不再写死任何
     ]);
     assert.equal(s.tier, 'peak');
 
+=======
+      data: { currency: 'CNY', total: '8.79', fullBalance: '20', tier: 'peak' },
+    });
+    assert.ok(s && s.ok && s.shape === 'money');
+    assert.equal(s.fullBalance, '20');
+    assert.equal(s.tier, 'peak');
+>>>>>>> yellow-hair
     const bad = toBalanceState({
       ok: true,
       provider: 'some-wallet',
       shape: 'money',
+<<<<<<< HEAD
       data: { wallets: [{ currency: 'CNY', total: '8.79', fullBalance: 20 }], tier: '???' },
     });
     assert.ok(bad && bad.ok && bad.shape === 'money');
@@ -422,5 +463,12 @@ describe('money —— 档位基准由数据带出（展示层不再写死任何
       null,
       '缺 currency 的项被丢弃，丢光就是认不出',
     );
+=======
+      data: { currency: 'CNY', total: '8.79', tier: '???', fullBalance: 20 },
+    });
+    assert.ok(bad && bad.ok && bad.shape === 'money');
+    assert.equal(bad.tier, undefined, '不认识的档位值 → 不渲染峰谷');
+    assert.equal(bad.fullBalance, undefined, '非字符串基准 → 视为没给');
+>>>>>>> yellow-hair
   });
 });

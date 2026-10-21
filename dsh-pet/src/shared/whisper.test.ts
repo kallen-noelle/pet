@@ -9,6 +9,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
+<<<<<<< HEAD
 import {
   MEME_BUBBLE_CLASS,
   MEME_BUBBLE_CSS,
@@ -17,6 +18,9 @@ import {
   createMemeImageFromUrl,
   memeImageUrl,
 } from './whisper.ts';
+=======
+import { MEME_BUBBLE_CLASS, MEME_BUBBLE_CSS, MEME_IMG_CLASS, createMemeImage, memeImageUrl } from './whisper.ts';
+>>>>>>> yellow-hair
 
 describe('memeImageUrl —— 表情包图片地址', () => {
   test('中文名被 URL 编码（路由段只认编码后的形态）', () => {
@@ -171,6 +175,7 @@ describe('createMemeImage —— 两端共用的配图节点', () => {
     }
   });
 
+<<<<<<< HEAD
   test('createMemeImageFromUrl —— url 形态直接用那个完整地址（不拼表情包路径，也不需要 BASE）', () => {
     const doc = stubDocument();
     try {
@@ -202,6 +207,8 @@ describe('createMemeImage —— 两端共用的配图节点', () => {
     }
   });
 
+=======
+>>>>>>> yellow-hair
   test('两端选择器/变量都写在 shared 里（避免浏览器与桌面各写一份走样）', () => {
     assert.ok(MEME_BUBBLE_CSS.includes('.' + MEME_IMG_CLASS));
     assert.ok(MEME_BUBBLE_CSS.includes('.' + MEME_BUBBLE_CLASS));

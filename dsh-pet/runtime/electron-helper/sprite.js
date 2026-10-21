@@ -36,6 +36,7 @@ class PetSprite {
     // 但身体永不越界（漫游/拖拽都不会弄丢宠物）。与浏览器 overlay 的 sideAllow 同一套语义。
     this.sideAllow = (S.HIT_BOX.x0 / 640) * this.size;
     window.__dshPetDebug.sideAllow = this.sideAllow;
+<<<<<<< HEAD
     // 窗口四周外扩：左右下 = WINDOW_MARGIN_RATIO×宠物尺寸（既有取值，不动）；
     // **上边距按气泡最大高度算**——气泡锚字号、窗口余量锚宠物，两者本就会脱钩：宠物变小
     // （或关掉 followPet 把字号固定）时半只宠物的余量装不下气泡，气泡顶端会被窗口上边缘切掉。
@@ -44,6 +45,12 @@ class PetSprite {
     const m = this.size * WINDOW_MARGIN_RATIO;
     const fontConf = pet.font || config.font || S.DEFAULT_FONT;
     this.margin = { t: Math.max(m, S.bubbleTopMarginPx(fontConf, this.size)), r: m, b: m, l: m };
+=======
+    // 窗口四周外扩（= WINDOW_MARGIN_RATIO×宠物尺寸）：sprite 钉在 (margin.l, margin.t)，
+    // 窗口 = sprite + 四边余量——气泡/未来弹窗显示在余量里；余量透明且点击穿透
+    const m = this.size * WINDOW_MARGIN_RATIO;
+    this.margin = { t: m, r: m, b: m, l: m };
+>>>>>>> yellow-hair
     window.__dshPetDebug.winMargin = this.margin;
     // 宠物包围盒左上角在【工作区】坐标系里的位置（本窗口的位置 = 宠物的位置）
     this.pos = { x: 0, y: 0 };
@@ -55,10 +62,13 @@ class PetSprite {
     this.weights = pet.animationWeights || cfg.animationWeights;
     // 拖拽抛掷物理参数（顶层全局；拍平已吹入实例，兜底回全局/默认）
     this.physics = pet.physics || config.physics || S.DEFAULT_PHYSICS;
+<<<<<<< HEAD
     // 字体（全局一份；拍平已吹入实例，兜底回主条目/默认）：字号按本宠物尺寸算（resolveFontPx），
     // 字体族不在这里用——它是全局变量、由 renderer.js 注入 documentElement。
     // fontConf 已在上面算窗口上边距时取好（上边距要用同一份字号）
     this.font = fontConf;
+=======
+>>>>>>> yellow-hair
     // 抛掷锁定在当前屏幕（根字段；拍平已吹入实例，兜底回主条目/默认）：
     // true = 甩出去只在松手时所在那块屏内弹（屏缝当墙），false = 照常跨屏飞行
     this.confineToScreen = pet.confineToScreen === true || config.confineToScreen === true;
@@ -70,6 +80,7 @@ class PetSprite {
     this.gen = 0;
     this.anim = this.animations.idle[0] ?? '';
     this.once = true;
+<<<<<<< HEAD
     // 播放回执（issue #122 第 3 项）：当前正在播的**第三方点播**编号（null = 自播动画，不上报）。
     // 为什么要单独一个字段：this.anim 只是动画名，右键菜单点播与第三方 /anim 可以播同名动画，
     // 光看名字分不出"这一段该不该上报回执"。
@@ -78,6 +89,9 @@ class PetSprite {
     // 构造函数里**直接写 `_facing`**，避免在其它字段就绪前就触发一次上报。
     this._facing = 'left';
     this.poseTimer = null; // 实况上报的节流定时器（见 markPoseDirty）
+=======
+    this.facing = 'left';
+>>>>>>> yellow-hair
     // 交互/移动
     this.dragState = { active: false, dragging: false, sx: 0, sy: 0, petX: 0, petY: 0 };
     this.justDragged = false;
@@ -92,10 +106,13 @@ class PetSprite {
     this.dragFollowToken = 0;
     this.throwRef = null; // 抛掷 rAF handle
     this.throwToken = 0;
+<<<<<<< HEAD
     // 位置指令（POST /position）的跟随 rAF（spring 与 line 共用同一个句柄）：与拖拽跟手分开——
     // 拖拽没有终点（指针一直喂目标），这条有终点，收敛/到点后必须自己收掉，否则 rAF 永远转下去
     this.posFollow = null;
     this.posFollowToken = 0;
+=======
+>>>>>>> yellow-hair
     this.space = null; // 抛掷空间（逐屏 AABB）缓存；显示器变化时由 relayout() 置空重建
     // Q 弹挤压（点击回应 / 抛掷落地）：rAF + 待压标记（等新动画成为前台再压，压新首帧）
     this.squashRef = null;
@@ -126,9 +143,12 @@ class PetSprite {
     this.whisperText = '';
     // 配图名称（配置 memes 的键；whisperImageEnabled 开启时由 host 随机抽定，随文本一起来）
     this.whisperImage = '';
+<<<<<<< HEAD
     // 配图**地址**（POST /broadcast 的 url 参数；与 whisperImage 二选一，见 showWhisper）。
     // 两种形态由字段名区分，不靠嗅探——地址形态直接用、名称形态才按素材根拼路径。
     this.whisperUrl = '';
+=======
+>>>>>>> yellow-hair
     // 工作状态联动（DSH 会话状态）：容器 1s 轮询 /state 递增 workTick → 本宠物按档位播动画+气泡。
     // 气泡单槽优先级 终态任务 > whisper > balance > 非终态任务（见 renderBubble）；
     // workStatusEnabled 未启用时完全免疫（与浏览器一致）
@@ -138,10 +158,13 @@ class PetSprite {
     this.workState = null; // 最近一次工作状态（互动/事件动画播完恢复档位循环用）
     this.prevWorkState = null; // 上一档状态（气泡只在状态变化时点亮/收起，Bug 2）
     this.prevWorkTick = 0;
+<<<<<<< HEAD
     // 占用锁（issue #122 第 4 项）：frozen = 本宠物此刻正被第三方占用（与浏览器 PetCard.frozenRef 同义）。
     // lockTimer = 按叶子里的 expiresAt 自己到点解除（宿主侧过期是懒判的，不会推"锁没了"）。
     this.frozen = false;
     this.lockTimer = null;
+=======
+>>>>>>> yellow-hair
     // 对话弹窗（shared 组件）：当前挂载的 close() 句柄 + 开启标记
     // （chatOpen 是穿透守卫：弹窗是窗口内 DOM，期间整窗保持可交互，与 menuOpen 同语义——否则
     //   光标移到输入框（不在身体命中区）就会被 onMouseMove 翻回穿透，点击全被透传）
@@ -154,11 +177,14 @@ class PetSprite {
     this.el.style.left = this.margin.l + 'px';
     this.el.style.top = this.margin.t + 'px';
     this.el.style.setProperty('--pet-size', this.size + 'px');
+<<<<<<< HEAD
     // 字号（配置 font）：按本宠物尺寸算好最终 px 注入 —— 气泡与悬浮提示的 CSS 读这两个变量
     // （与浏览器端同一套变量名、同一份换算 S.resolveFontPx，见 shared/fonts.ts）
     const fontPx = S.resolveFontPx(this.font, this.size);
     this.el.style.setProperty('--dsh-pet-font-bubble', fontPx.bubble + 'px');
     this.el.style.setProperty('--dsh-pet-font-tip', fontPx.tip + 'px');
+=======
+>>>>>>> yellow-hair
     const stage = document.createElement('div');
     stage.className = 'pet-stage';
     stage.style.transform = 'translateY(' + this.bottomPad + 'px)';
@@ -296,6 +322,7 @@ class PetSprite {
   // setContentBounds 要**屏幕**坐标：pos 是视口（桌面外接矩形）相对坐标，先加 VIEW.x/y
   // 再统一 ×scale 回物理像素（§3.5 IPC 收口）——主进程收到的数字与线性化旧行为逐位一致，
   // 主进程侧（bounds/去重/碰撞 broker）完全不用改。
+<<<<<<< HEAD
   // ---- 实况（位置 + 朝向）上报（issue #122 第 1 条：取得有效实例及其位置、朝向）----
   //
   // 第三方用 `GET /pose` 读桌面端这一份快照。**网页端不走这条路**——它的位置天生每个页面一份
@@ -348,6 +375,8 @@ class PetSprite {
     });
   }
 
+=======
+>>>>>>> yellow-hair
   sendBounds(px, py) {
     this.pos = { x: Math.round(px), y: Math.round(py) };
     window.__dshPetDebug.dragPos = { x: this.pos.x, y: this.pos.y };
@@ -367,18 +396,24 @@ class PetSprite {
         toScreen(this.bottomPad),
         fly ? toScreen(fly.vx) : 0,
         fly ? toScreen(fly.vy) : 0,
+<<<<<<< HEAD
         // 窗口余量（DIP）：主进程据此算宠物身体命中区——余量不再四边相等（上边距按气泡加高），
         // 不能再按「窗口宽/4」反推（见 pointer-target.js 的 spriteHitRect）。
         toScreen(this.margin.l),
         toScreen(this.margin.t),
+=======
+>>>>>>> yellow-hair
       );
     }
     // 位置变了（宠物漫游/拖拽/飞行，窗口跟着动）：提示若正显示必须重摆一次——它跟的是光标，
     // 而光标存的是视口坐标，窗口一移，光标相对窗口的位置就变了，不重摆提示会跟着窗口漂走。
     // 只在显示时重摆：漫游逐帧调本函数，没显示提示时不做无谓的 DOM 写入。
     if (this.tipOn) this.renderTip();
+<<<<<<< HEAD
     // 实况标脏（节流上报，见 markPoseDirty）：所有位移都收口在本函数，所以这里一处就够
     this.markPoseDirty();
+=======
+>>>>>>> yellow-hair
   }
 
   // 角落/边距 → 窗口位置；拖拽后按会话内位置（比例）还原——**松手无任何边界夹取**，
@@ -450,6 +485,7 @@ class PetSprite {
     return this.pos.y + this.halfH;
   }
 
+<<<<<<< HEAD
   /**
    * 播放回执上报（issue #122 第 3 项）：把这一段点播的**真实**状态告诉 host。
    *
@@ -467,6 +503,10 @@ class PetSprite {
 
   // 双缓冲切换（与浏览器同一套：前台 opacity 切换 + 降级视频清 handler 并停播，防残留 ended 雪崩）
   switchTo(next, nextOnce, playbackId, url) {
+=======
+  // 双缓冲切换（与浏览器同一套：前台 opacity 切换 + 降级视频清 handler 并停播，防残留 ended 雪崩）
+  switchTo(next, nextOnce) {
+>>>>>>> yellow-hair
     if (!next) return;
     const pending = this.pending;
     if (pending && pending.anim === next && pending.once === nextOnce) {
@@ -476,12 +516,15 @@ class PetSprite {
         this.pendingSquash = false;
         this.startSquash(this.front === 0 ? this.videoA : this.videoB);
       }
+<<<<<<< HEAD
       // 这次点播的目标**本来就在播**（没换源，但确实在播）→ 如实回 playing，
       // 否则调用方只能干等到 timeout（host 对终态幂等，重复上报无害）
       if (playbackId) {
         this.playback = playbackId;
         this.reportPlayback(playbackId, 'playing');
       }
+=======
+>>>>>>> yellow-hair
       return;
     }
     const gen = ++this.gen;
@@ -489,10 +532,14 @@ class PetSprite {
     const target = this.front === 0 ? this.videoB : this.videoA;
     const el = target;
     if (!el) return;
+<<<<<<< HEAD
     // 素材地址两条路（POST /anim 的 url 参数）：url 形态直接用第三方给的**完整地址**——宿主已把
     // scheme 卡在 http/https，这里**不经 bridge、也不拼 BASE**（地址本身就与本页 origin 无关）；
     // name 形态照旧按「素材根 + 名字」拼（名字即文件名）。
     el.src = url || this.assetBase + encodeURIComponent(next) + (S.ANIMATION_EXT || '.webm');
+=======
+    el.src = this.assetBase + encodeURIComponent(next) + (S.ANIMATION_EXT || '.webm');
+>>>>>>> yellow-hair
     el.loop = !nextOnce;
     el.muted = true;
     el.autoplay = true;
@@ -505,11 +552,14 @@ class PetSprite {
       if (!this.pending || this.pending.gen !== gen) return;
       this.pending = null;
       console.warn('[dsh-pet] 素材加载失败 pet=' + this.pet.id + ' anim=' + next + '：' + why + '（已释放本次切换）');
+<<<<<<< HEAD
       // 播放回执：这一段点播没能播起来 → 如实回 failed（而不是让调用方干等到 timeout）
       if (playbackId) {
         if (this.playback === playbackId) this.playback = null;
         this.reportPlayback(playbackId, 'failed', why === 'video error' ? 'decode-error' : 'asset-load');
       }
+=======
+>>>>>>> yellow-hair
     };
     const loadTimer = window.setTimeout(() => loadGuard('10s 超时'), 10000);
     el.onerror = () => {
@@ -528,6 +578,7 @@ class PetSprite {
         old.classList.remove('is-front');
         old.onended = null;
         old.pause();
+<<<<<<< HEAD
         // 被换下去的那一段若属第三方点播且没播完 → 如实回 cancelled。
         // （"被新点播顶掉"由 host 在受理时直接标记，这里补的是**非点播**打断：
         //   点击 / 拖拽 / 碎碎念 / 余额 / 工作状态 / 空闲回收。）
@@ -550,6 +601,13 @@ class PetSprite {
           if (this.playback === playbackId) this.playback = null;
           this.reportPlayback(playbackId, 'failed', 'play-rejected');
         });
+=======
+      }
+      this.front = this.front === 0 ? 1 : 0;
+      this.pending = null;
+      el.style.transform = this.facing === 'right' ? 'scaleX(-1)' : '';
+      el.play().catch(() => {});
+>>>>>>> yellow-hair
       // 点击 Q 弹：等新动画就位后才压（压的是新点击动画的首帧，与浏览器一致）
       if (this.pendingSquash) {
         this.pendingSquash = false;
@@ -561,6 +619,7 @@ class PetSprite {
     if (el.readyState >= 2) onReady();
   }
 
+<<<<<<< HEAD
   playOnce(name, playbackId, url) {
     this.anim = name;
     this.once = true;
@@ -638,14 +697,23 @@ class PetSprite {
       },
       Math.max(0, expiresAt - Date.now()),
     );
+=======
+  playOnce(name) {
+    this.anim = name;
+    this.once = true;
+    this.switchTo(name, true);
+>>>>>>> yellow-hair
   }
 
   // 动画链（与浏览器 pickNext 语义一致，纯逻辑在 shared）
   playIdle() {
+<<<<<<< HEAD
     // 占用锁（issue #122 第 4 项）：锁生效时**不掷骰**。这里是随机链的**唯一**入口（只有动画播完
     // 才会走到），一句判断就把随机动画、随机转向、自主走位一起停住——宠物停在最后一帧，
     // 等持锁者的下一条指令（那走 /anim，不经这里）。与浏览器 pickNext 同一处判断。
     if (this.frozen) return;
+=======
+>>>>>>> yellow-hair
     this.stopMove();
     const { animations, animationWeights } = { animations: this.animations, animationWeights: this.weights };
     const roll = Math.random();
@@ -677,6 +745,7 @@ class PetSprite {
   }
 
   handleEnded() {
+<<<<<<< HEAD
     // 播放回执：前台视频真的播完了 → 如实回 ended。放在拖拽守卫**之前**：
     // "播完了"是既成事实，拖拽守卫管的是动画链怎么推进，不该影响回执的准确性。
     if (this.playback) {
@@ -692,6 +761,9 @@ class PetSprite {
     // 带 anim 的气泡（默认就是 true），说话动画播完就把工作状态动画点回来，冻结形同虚设。
     // 播放回执已经在上面上报，不受这一行影响。
     if (this.frozen) return;
+=======
+    if (this.dragState.active) return;
+>>>>>>> yellow-hair
     const { animations } = { animations: this.animations };
     // 事件动画播完：回 idle（与 drag/clicks 同分支，不进随机链）；气泡由定时器自动消失，与动画解耦
     const isEvent = S.isEventAnim(animations.events, this.anim);
@@ -738,11 +810,14 @@ class PetSprite {
   // 互动/事件动画播完后恢复 workStatus 档位循环：非终态 → 按当前状态档位重选动画（多候选档内
   // 随机并避开当前段）；终态/空闲 → false 不接管，调用方走原逻辑（回 idle / 随机池，与浏览器一致）。
   resumeWorkStatusAnim() {
+<<<<<<< HEAD
     // 占用锁：冻结期间不许由这条路把工作状态动画点回来（与浏览器端同名方法同一道自防）。
     // 它读的是 this.workState（实时状态），跟 workTick 无关——持锁者每投一次带 anim 的气泡，
     // 说话动画播完就会经 handleEnded 走到这里。解冻路径不受影响：applyFreeze(false) 是先置
     // this.frozen = false 再调它。
     if (this.frozen) return false;
+=======
+>>>>>>> yellow-hair
     const state = this.workState;
     if (!state || state === 'success' || state === 'error') return false;
     const pool = this.animations.events?.workStatus;
@@ -763,7 +838,11 @@ class PetSprite {
 
   // ---- 漫游（rAF 驱动，动画首尾各 leadSec/tailSec 秒原地不动；几何在 shared/planMove） ----
   // preferredName 传入时固定使用该动画（右键菜单点播移动动画），否则与随机链一致随机选
+<<<<<<< HEAD
   tryMove(preferredName, playbackId) {
+=======
+  tryMove(preferredName) {
+>>>>>>> yellow-hair
     if (this.moveRef !== null || this.pendingMove || this.throwRef !== null) return true;
     const moves = this.animations.moves;
     const actions = moves.actions;
@@ -773,6 +852,7 @@ class PetSprite {
       : actions[Math.floor(Math.random() * actions.length)];
     if (!chosen) return false;
     const mp = Object.assign({}, moves.default, chosen.params || {});
+<<<<<<< HEAD
     // 朝向 → 走路方向：**只看当前 facing**（与浏览器 pet.ts 的 tryMove 同一条）。原式的 XOR 是用来
     // 补"turn 播完 setFacing 异步、紧随的随机链还读到旧 facing"，双端都改成立即同步之后它反而把方向
     // 多翻一次：turn 播完朝右，这里算出 dir=-1，于是镜像朝右、人往左走。故删掉。
@@ -791,6 +871,15 @@ class PetSprite {
     const plan = S.planMove({
       cx,
       cy,
+=======
+    const dir = (this.facing === 'right') !== this.animations.turn.includes(this.anim) ? 1 : -1;
+    const W = VIEW.w;
+    const H = VIEW.h;
+    const distScale = this.size / S.PET_REF_WIDTH;
+    const plan = S.planMove({
+      cx: this.currentCenterX(),
+      cy: this.currentCenterY(),
+>>>>>>> yellow-hair
       W,
       H,
       dir,
@@ -799,13 +888,22 @@ class PetSprite {
       margin: mp.margin, // 同 position() 的 marginX/marginY：页面级缩放统一放大，配置值不再乘 scale（§3.5）
       halfW: this.halfW,
       sideAllow: this.sideAllow,
+<<<<<<< HEAD
       areas: wanderArea ? [wanderArea] : AREAS,
+=======
+      // 落点按显示器并集判定：能骑缝跨屏走，但走不进外接矩形里的空洞
+      areas: AREAS,
+>>>>>>> yellow-hair
     });
     if (!plan) return false;
     this.pendingMove = { ...plan, dir, leadSec: mp.leadSec, tailSec: mp.tailSec };
     this.anim = chosen.name;
     this.once = true;
+<<<<<<< HEAD
     this.switchTo(chosen.name, true, playbackId);
+=======
+    this.switchTo(chosen.name, true);
+>>>>>>> yellow-hair
     return chosen.name;
   }
 
@@ -845,9 +943,12 @@ class PetSprite {
       cancelAnimationFrame(this.moveRef);
       this.moveRef = null;
     }
+<<<<<<< HEAD
     // 位置指令的弹簧也是一种"自主移动"：任何停走路的地方都该把它一并停掉，否则两套运动系统会
     // 同时改窗口位置（用户拖拽 / 抛掷 / 事件动画 / 菜单点播都会走到这）。
     this.stopPosFollow();
+=======
+>>>>>>> yellow-hair
   }
 
   // ---- 拖拽抛掷物理（弹簧跟手 + 甩抛 + 重力反弹；与浏览器 pet.ts 同构）----
@@ -984,6 +1085,7 @@ class PetSprite {
     this.throwRef = requestAnimationFrame(step);
   }
 
+<<<<<<< HEAD
   // ---- 位置 / 抛掷指令（POST /position、POST /throw；与浏览器 pet.ts 同构）----
   stopPosFollow() {
     this.posFollowToken++;
@@ -1082,6 +1184,8 @@ class PetSprite {
     this.startThrow(this.pos.x, this.pos.y, v.vx, v.vy);
   }
 
+=======
+>>>>>>> yellow-hair
   /** 被撞回调（跨窗碰撞 broker 转发）：停当前动作，从落点以新初速抛出去（全复用现有物理） */
   onDeskHit(vx, vy) {
     this.stopMove();
@@ -1129,6 +1233,7 @@ class PetSprite {
   onPointerDown(e) {
     // 只认左键：右键进入拖拽判定会与右键菜单打架（右键不拖拽，两端一致）
     if (e.button !== 0) return;
+<<<<<<< HEAD
     // 占用锁（issue #122 第 4 项）：用户**点了或拖了**这只宠物 = 用户接管，立刻撤掉第三方占用。
     // 这是唯一一处"渲染端 → 宿主"的锁上报——宿主看不见鼠标，而锁在它手里
     // （/lock/release 的 force 形态；桌面端走 bridge，与播放回执 reportPlayback 同一条路）。
@@ -1144,6 +1249,8 @@ class PetSprite {
         if (!ok) console.warn('[dsh-pet] 用户接管上报未送达 pet=' + this.pet.id);
       });
     }
+=======
+>>>>>>> yellow-hair
     // 抓取速度日志：stopThrow 之前读，否则飞行速度就没了；静止时记录 0（与浏览器同构）
     const grabState = this.throwState;
     console.log(
@@ -1531,6 +1638,7 @@ class PetSprite {
     e.preventDefault();
     this.stopThrow(); // 菜单弹出前停住飞行中的宠物
     this.stopMove(); // 菜单悬停期间宠物不漫游
+<<<<<<< HEAD
     // 桌面专属工具根项（打开网站 / 查看余额 / 碎碎念 / 对话 / 回到初始位置 / 重载配置）+ 共享菜单树（动作→分类→具体动画）
     // 碎碎念/对话项无条件显示：手动触发不受 whisperEnabled 限制（该字段只影响自动周期轮询）
     // 首项文案随宿主形态变（OPEN_TARGET）：宿主是 DSH 桌面应用时点是"唤起桌面应用窗口"，仍叫「打开网站」会误导
@@ -1538,6 +1646,12 @@ class PetSprite {
     // 「查看余额」无条件显示（与浏览器端一致）：关了 balanceEnabled 的宠物也能点——手动请求不受开关限制
     //（该开关只关自动轮询与档位动画），点了一定给答复。
     tools.push({ label: '查看余额', action: 'show-balance' });
+=======
+    // 桌面专属工具根项（打开网站 / 碎碎念 / 对话 / 回到初始位置 / 重载配置）+ 共享菜单树（动作→分类→具体动画）
+    // 碎碎念/对话项无条件显示：手动触发不受 whisperEnabled 限制（该字段只影响自动周期轮询）
+    // 首项文案随宿主形态变（OPEN_TARGET）：宿主是 DSH 桌面应用时点是"唤起桌面应用窗口"，仍叫「打开网站」会误导
+    const tools = [{ label: OPEN_TARGET === 'desktop' ? '打开 DeepSeek Harness' : '打开网站', action: 'open-site' }];
+>>>>>>> yellow-hair
     tools.push(
       { label: '碎碎念', action: 'whisper' },
       { label: '对话', action: 'chat' },
@@ -1576,9 +1690,13 @@ class PetSprite {
     this.syncInputRegions(); // mountContextMenu 完成布局后才能读取菜单矩形
   }
 
+<<<<<<< HEAD
   /** `keepFacing` = 调用方已**显式指定**朝向（POST /anim 的 facing）：跳过下面"文字类动画点播前
    *  强制朝左"那条镜像修正——显式值优先。右键菜单点播不传（保持原语义）。 */
   onMenuAction(leaf, keepFacing) {
+=======
+  onMenuAction(leaf) {
+>>>>>>> yellow-hair
     this.closeMenu();
     if (!leaf || typeof leaf !== 'object') return;
     if (leaf.action === 'open-site') {
@@ -1610,16 +1728,22 @@ class PetSprite {
       return;
     }
     if (!leaf.anim) return;
+<<<<<<< HEAD
     // 回执归属：这一段动画若来自第三方点播，编号要跟着换源一起走（自播动画传 null）
     const playbackId = typeof leaf.playbackId === 'string' && leaf.playbackId ? leaf.playbackId : null;
     // 文字类（noMirror）朝右站姿是镜像的：点播前强制朝左，避免文字镜像（与浏览器随机链"朝右不选文字"同语义）。
     // `keepFacing` 时跳过：调用方已显式指定朝向，显式值优先（要 right 就给 right，哪怕文字会镜像）。
     if (!keepFacing && S.isNoMirrorAnimation(this.animations.categories, leaf.anim) && this.facing === 'right') {
+=======
+    // 文字类（noMirror）朝右站姿是镜像的：点播前强制朝左，避免文字镜像（与浏览器随机链"朝右不选文字"同语义）
+    if (S.isNoMirrorAnimation(this.animations.categories, leaf.anim) && this.facing === 'right') {
+>>>>>>> yellow-hair
       this.facing = 'left';
     }
     // 点播移动动画：走真实移动（与随机游走同一套：边界检查 / 随机距离 / leadSec·tailSec / dir），
     // 仅"选哪个动画"由菜单决定；挪不动（false）退化纯播放
     if (this.animations.moves.actions.some((a) => a.name === leaf.anim)) {
+<<<<<<< HEAD
       const moved = this.tryMove(leaf.anim, playbackId);
       if (moved === false) this.playOnce(leaf.anim, playbackId);
       // moved === true = 已有移动/抛掷在进行中（tryMove 提前返回，**根本没换源**）：
@@ -1628,6 +1752,12 @@ class PetSprite {
       return;
     }
     this.playOnce(leaf.anim, playbackId);
+=======
+      if (this.tryMove(leaf.anim) === false) this.playOnce(leaf.anim);
+      return;
+    }
+    this.playOnce(leaf.anim);
+>>>>>>> yellow-hair
   }
 
   closeMenu() {
@@ -1641,6 +1771,7 @@ class PetSprite {
     if (!this.inputBusy()) this.setInteractive(false);
   }
 
+<<<<<<< HEAD
   // 「查看余额」菜单：POST 动作让 host 刷新余额（写进 S）。
   // 结果**这里什么都不用做**：写叶子会让版本号变，挂着的长轮询那一拍立刻返回并展示
   // （展示走 showBalanceNow/showBalanceNotice 同一路径）。
@@ -1651,12 +1782,24 @@ class PetSprite {
     S.postAction(BALANCE_URL)
       .then((ok) => {
         if (!ok) console.warn('[dsh-pet] 菜单查看余额：刷新动作未成功');
+=======
+  // 「查看余额」菜单：POST 动作让 host 刷新余额（写进 S），随即**立刻跑一拍 /state** 拿结果展示
+  // （0 延迟，不用等下一个 1s；展示走 showBalanceNow/showBalanceNotice 同一路径）。
+  // 注意这里不再直接拉余额：数据只有一个出口（S），菜单只负责"让它刷新"。
+  showBalanceFromMenu() {
+    if (!this.pet.balanceEnabled) return;
+    S.postAction(BALANCE_URL)
+      .then((ok) => {
+        if (!ok) console.warn('[dsh-pet] 菜单查看余额：刷新动作未成功');
+        pollStateNow(); // 立即拉一拍：结果 0 延迟可见（失败也会由 /state 里的 ok:false 弹文字说明）
+>>>>>>> yellow-hair
       })
       .catch((e) => {
         console.error('[dsh-pet] 菜单查看余额异常', e);
       });
   }
 
+<<<<<<< HEAD
   // 「碎碎念」菜单：POST 动作让 host 立即新生成一句（写进 S）。
   // 动作不回文本——文本只有一个出口（S），随"版本号变化"唤醒的那一拍长轮询到达并展示。
   // 手动触发不受 whisperEnabled 限制——该字段只关自动周期，手动永远可用。
@@ -1665,6 +1808,16 @@ class PetSprite {
     S.postAction(WHISPER_URL + '?pet=' + encodeURIComponent(this.pet.id) + '&surface=desktop')
       .then((ok) => {
         if (!ok) console.warn('[dsh-pet] 菜单碎碎念：生成动作未成功 pet=' + this.pet.id);
+=======
+  // 「碎碎念」菜单：POST 动作让 host 立即新生成一句（写进 S），随即立刻跑一拍 /state 拿文本展示
+  // （0 延迟，不用等下一个 1s）。动作不回文本——文本只有一个出口（S）。
+  // 手动触发不受 whisperEnabled 限制——该字段只关自动周期，手动永远可用。
+  showWhisperFromMenu() {
+    S.postAction(WHISPER_URL + '?pet=' + encodeURIComponent(this.pet.id))
+      .then((ok) => {
+        if (!ok) console.warn('[dsh-pet] 菜单碎碎念：生成动作未成功 pet=' + this.pet.id);
+        pollStateNow(); // 立即拉一拍：文本随这一拍到达并展示
+>>>>>>> yellow-hair
       })
       .catch((e) => {
         console.warn('[dsh-pet] 菜单碎碎念异常', e);
@@ -1686,14 +1839,23 @@ class PetSprite {
     const m = S.mountChatDialog({
       petId: this.pet.id,
       baseUrl: BASE + '/chat',
+<<<<<<< HEAD
       surface: 'desktop',
+=======
+>>>>>>> yellow-hair
       x: Math.max(4, this.hit.getBoundingClientRect().right + 6),
       y: Math.max(4, this.hit.getBoundingClientRect().top + 6),
       // 弹窗同菜单：只允许在「窗口 ∩ 工作区」内显示，贴边时不被屏幕裁掉（#41）
       clamp: this.visibleClampRect(),
       onSent: () => {
+<<<<<<< HEAD
         // 发送成功：回复已写进 S → 版本号变 → 挂着的长轮询立刻返回并弹气泡（0 延迟）
         console.info('[dsh-pet] 对话已发送 pet=' + this.pet.id);
+=======
+        // 发送成功：回复已写进 S，立刻跑一拍 /state 让气泡 0 延迟出现（不必等下一个 1s）
+        console.info('[dsh-pet] 对话已发送 pet=' + this.pet.id);
+        pollStateNow();
+>>>>>>> yellow-hair
       },
       onClose: () => {
         this.chatClose = null;
@@ -1763,6 +1925,7 @@ class PetSprite {
     const workTerminal = this.workState === 'success' || this.workState === 'error';
     const slot =
       workTerminal && workOn ? 'work' : whisperOn ? 'whisper' : balanceOn ? 'balance' : workOn ? 'work' : 'none';
+<<<<<<< HEAD
     // 配图两种形态二选一（host 判定层保证）：url 直接用那个完整地址，image 按素材根拼表情包路径。
     // 样式/class 两份共用（都在 shared 的 MEME_BUBBLE_CSS），只是 src 的来源不同。
     const whisperImg =
@@ -1774,6 +1937,12 @@ class PetSprite {
     this.bubble.classList.toggle(
       'is-whisper',
       // 余额「文字说明」（不可用状态）同样套用紧凑变体：字号更小、宽度下限更窄，多行说明更紧凑
+=======
+    const whisperImg = slot === 'whisper' ? S.createMemeImage(this.whisperImage, BASE, this.assetRoot) : null;
+    this.bubble.classList.toggle(
+      'is-whisper',
+      // 余额「文字说明」（不可用状态）同样要换行变体：默认 nowrap 会把长文案顶出宠物宽度
+>>>>>>> yellow-hair
       slot === 'whisper' || slot === 'work' || (slot === 'balance' && this.balanceWrap),
     );
     this.bubble.classList.toggle(S.MEME_BUBBLE_CLASS, !!whisperImg);
@@ -1824,4 +1993,8 @@ class PetSprite {
     this.bubble.classList.add('is-on');
     window.__dshPetDebug.lastBubbleTitle = this.bubble.textContent.slice(0, 60);
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> yellow-hair

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /**
+<<<<<<< HEAD
  * dsh-pet 独立模式入口 —— 不打开 DSH 也能养桌宠。
  *
  * 它把三件事串起来（每一步都复用插件自己的实现，没有第二份业务逻辑）：
@@ -12,6 +13,16 @@
  * 用法：
  *   npx dsh-pet-standalone              # 插件装好后直接跑（package.json 的 bin）
  *   npm run standalone                  # 仓库里跑（先安装依赖并 npm run build）
+=======
+ * dsh-pet 独立模式 CLI 入口 —— 不打开 DSH 也能养桌宠。
+ *
+ * 参数解析与启动编排分开：本文件只管"命令行长什么样、体检还是启动"，
+ * 真正把服务与插件宿主半边串起来的逻辑在 `./run`（桌面应用入口 `./desktop` 复用同一条路径）。
+ *
+ * 用法：
+ *   npx dsh-pet-standalone              # 插件装好后直接跑（package.json 的 bin）
+ *   npm run standalone                  # 仓库里跑（先 npm install：prepare 会构建 lib/）
+>>>>>>> yellow-hair
  *   node lib/standalone.js --port 3081
  *   node lib/standalone.js --check      # 只体检，不开窗口
  *
@@ -19,6 +30,7 @@
  * 余额、碎碎念、对话、系统通知依赖 DSH 的凭证/模型/会话，在独立模式下明确不可用
  * （结构化失败 + 日志，不假装成功）。详见 README 的「独立运行（不打开 DSH）」一节。
  */
+<<<<<<< HEAD
 import { existsSync } from 'node:fs';
 
 import { flattenPetList, readAllConfig } from '../host/config';
@@ -160,6 +172,12 @@ async function run(logger: StandaloneLogger, options: { port: number }): Promise
     logger.warn(`初始化期间有 ${context.failures.length} 项失败（见上方日志）；路由仍可用，相关端点会显式报错`);
   }
 }
+=======
+import { runCheck } from './check';
+import { createStandaloneLogger } from './context';
+import { parseArgs, USAGE } from './options';
+import { runStandalone } from './run';
+>>>>>>> yellow-hair
 
 /** CLI 入口 */
 async function main(): Promise<number> {
@@ -176,7 +194,12 @@ async function main(): Promise<number> {
   }
   const logger = createStandaloneLogger();
   if (options.check) return runCheck(logger);
+<<<<<<< HEAD
   await run(logger, options);
+=======
+  // 启动失败（如包内默认配置缺失）时 runStandalone 已打日志并置 process.exitCode=1
+  await runStandalone(logger, options);
+>>>>>>> yellow-hair
   return 0;
 }
 

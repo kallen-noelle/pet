@@ -2,8 +2,11 @@
 // 页面代码不在本文件：宠物页面在 pet.ts，设置页在 settings.ts——
 // 类似 Vue 的 App.vue 只挂根组件、SpringBoot 启动类只做装配，不写页面业务。
 import { makePetUI } from './pet';
+<<<<<<< HEAD
 import { readPose } from './pose';
 import { readProgress } from './progress';
+=======
+>>>>>>> yellow-hair
 import { makePetConfigSection, NS, zh, en, petBridge } from './settings';
 import { initNotify } from './notify';
 import { installCommandFaces, type CommandFace, type CommandUiLike } from './command-faces';
@@ -70,6 +73,7 @@ export function makeFactory(): (require: (mod: string) => any) => any {
       ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'dsh-pet: dictionaries');
       const t = ctx.locale.bind(NS);
 
+<<<<<<< HEAD
       // 「对外 Cordis 服务」入口（issue #122）：让**同页的第三方客户端插件**按需读这一页里某只
       // 宠物的实况与播放进度——页面内读内存，零请求，且天然绑定"这个页面里的这只"（网页端的
       // 位置与播放天生每个页面一份，塞进宿主快照语义上就是错的）。
@@ -97,6 +101,12 @@ export function makeFactory(): (require: (mod: string) => any) => any {
           }),
         'dsh-pet: notifications',
       );
+=======
+      // 系统通知：host 侧监听 DSH 宿主事件生成通知帧，写进 /state 的 sections.notify；
+      // 容器的统一轮询发现 counter 变化后调 notifyFromFrame 弹 toast（本引擎不再自己轮询）。
+      // 不再依赖浏览器 connection 事件流（DSH 0.1.5 删除了 api.events.mux/host）。
+      ctx.effect(() => initNotify(), 'dsh-pet: notifications');
+>>>>>>> yellow-hair
 
       // /pet 选择框：裸输 /pet 回车或菜单点选时弹出桌宠列表，选中后提交 /pet <id> 由 host 命令落地。
       // commandUi 已声明为服务依赖（上方 inject）：插件只在「/」命令服务就绪后 apply，

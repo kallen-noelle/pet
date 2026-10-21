@@ -7,13 +7,20 @@
  */
 import { after, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+<<<<<<< HEAD
 import { createServer, request as httpRequest } from 'node:http';
+=======
+import { createServer } from 'node:http';
+>>>>>>> yellow-hair
 import type { IncomingMessage, Server, ServerResponse } from 'node:http';
 
 import type { RegisteredRoute, StandaloneLogger } from './context.ts';
 import { createRequestListener, listenStandaloneServer } from './server.ts';
+<<<<<<< HEAD
 import { createRequestSecurity } from './request-security.ts';
 const security = createRequestSecurity();
+=======
+>>>>>>> yellow-hair
 
 /** 静默日志器（测试只断言行为） */
 const silent: StandaloneLogger = { info: () => {}, warn: () => {}, error: () => {}, debug: () => {} };
@@ -26,6 +33,7 @@ class FakeRes {
   destroyed = false;
   private readonly chunks: string[] = [];
 
+<<<<<<< HEAD
   getHeaderNames(): string[] {
     return Object.keys(this.headers);
   }
@@ -39,6 +47,11 @@ class FakeRes {
   writeHead(status: number, headers?: Record<string, string>): this {
     this.status = status;
     this.headers = { ...this.headers, ...headers };
+=======
+  writeHead(status: number, headers?: Record<string, string>): this {
+    this.status = status;
+    this.headers = headers ?? {};
+>>>>>>> yellow-hair
     this.headersSent = true;
     return this;
   }
@@ -60,6 +73,7 @@ class FakeRes {
 function call(listener: (req: IncomingMessage, res: ServerResponse) => void, url: string, method = 'GET'): FakeRes {
   const res = new FakeRes();
   // 只给监听器真正会读的两个字段（method/url）；其余成员本测试不触碰
+<<<<<<< HEAD
   listener(
     {
       method,
@@ -69,6 +83,9 @@ function call(listener: (req: IncomingMessage, res: ServerResponse) => void, url
     } as unknown as IncomingMessage,
     res as unknown as ServerResponse,
   );
+=======
+  listener({ method, url } as unknown as IncomingMessage, res as unknown as ServerResponse);
+>>>>>>> yellow-hair
   return res;
 }
 
@@ -98,11 +115,15 @@ async function occupyPort(): Promise<{ port: number; close: () => Promise<void> 
 describe('createRequestListener —— 转交给插件路由', () => {
   test('前缀下的请求原样交给插件 handler（URL 含前缀，由插件自己切）', () => {
     let seen = '';
+<<<<<<< HEAD
     const listener = createRequestListener({
       routes: [pluginLikeRoute((url) => (seen = url))],
       logger: silent,
       security,
     });
+=======
+    const listener = createRequestListener({ routes: [pluginLikeRoute((url) => (seen = url))], logger: silent });
+>>>>>>> yellow-hair
     const res = call(listener, '/dsh-pet-7340/config?force=1');
     assert.equal(res.status, 200);
     assert.equal(seen, '/dsh-pet-7340/config?force=1', '插件 handler 拿到的必须是完整 URL（它自己 slice 前缀）');
@@ -110,11 +131,19 @@ describe('createRequestListener —— 转交给插件路由', () => {
   });
 
   test('前缀之外 → 404，并把已注册路由列出来（"插件没注册"要能一眼看出）', () => {
+<<<<<<< HEAD
     const listener = createRequestListener({ routes: [pluginLikeRoute()], logger: silent, security });
     const res = call(listener, '/nope');
     assert.equal(res.status, 404);
     assert.match(res.body(), /\/dsh-pet-7340/, '404 正文应带上已注册前缀');
     assert.equal(res.headers['access-control-allow-origin'], undefined, '独立模式禁止跨源读取');
+=======
+    const listener = createRequestListener({ routes: [pluginLikeRoute()], logger: silent });
+    const res = call(listener, '/nope');
+    assert.equal(res.status, 404);
+    assert.match(res.body(), /\/dsh-pet-7340/, '404 正文应带上已注册前缀');
+    assert.equal(res.headers['access-control-allow-origin'], '*', '独立模式自己写的响应带跨源头');
+>>>>>>> yellow-hair
   });
 
   test('kind=exact 的路由按全等匹配，不吃子路径', () => {
@@ -126,7 +155,11 @@ describe('createRequestListener —— 转交给插件路由', () => {
         res.end('exact');
       },
     };
+<<<<<<< HEAD
     const listener = createRequestListener({ routes: [exact], logger: silent, security });
+=======
+    const listener = createRequestListener({ routes: [exact], logger: silent });
+>>>>>>> yellow-hair
     assert.equal(call(listener, '/dsh-pet-7340/state').body(), 'exact');
     assert.equal(call(listener, '/dsh-pet-7340/state/extra').status, 404);
   });
@@ -135,7 +168,10 @@ describe('createRequestListener —— 转交给插件路由', () => {
     const listener = createRequestListener({
       routes: [],
       logger: silent,
+<<<<<<< HEAD
       security,
+=======
+>>>>>>> yellow-hair
       status: () => ({ name: 'dsh-pet-standalone', port: 3080 }),
     });
     for (const path of ['/', '/health']) {
@@ -146,17 +182,28 @@ describe('createRequestListener —— 转交给插件路由', () => {
     }
   });
 
+<<<<<<< HEAD
   test('OPTIONS → 204，无跨源头，且不落到插件 handler', () => {
+=======
+  test('OPTIONS → 204 + 跨源头，且不落到插件 handler', () => {
+>>>>>>> yellow-hair
     let calls = 0;
     const listener = createRequestListener({
       routes: [pluginLikeRoute(() => (calls += 1))],
       logger: silent,
+<<<<<<< HEAD
       security,
+=======
+>>>>>>> yellow-hair
     });
     const res = call(listener, '/dsh-pet-7340/config', 'OPTIONS');
     assert.equal(res.status, 204);
     assert.equal(calls, 0, '预检不该进插件路由');
+<<<<<<< HEAD
     assert.equal(res.headers['access-control-allow-headers'], undefined);
+=======
+    assert.equal(res.headers['access-control-allow-headers'], 'content-type');
+>>>>>>> yellow-hair
   });
 
   test('/shutdown → 先回 200，再触发收尾回调（调用方要能拿到响应）', async () => {
@@ -164,7 +211,10 @@ describe('createRequestListener —— 转交给插件路由', () => {
     const listener = createRequestListener({
       routes: [pluginLikeRoute()],
       logger: silent,
+<<<<<<< HEAD
       security,
+=======
+>>>>>>> yellow-hair
       onShutdown: () => reasons.push('shutdown'),
     });
     const res = call(listener, '/shutdown', 'POST');
@@ -185,9 +235,15 @@ describe('createRequestListener —— 异常收口', () => {
         throw new Error('读盘失败');
       },
     };
+<<<<<<< HEAD
     const res = call(createRequestListener({ routes: [exploding], logger: silent, security }), '/dsh-pet-7340/config');
     assert.equal(res.status, 500);
     assert.deepEqual(JSON.parse(res.body()), { error: '本机服务暂时无法处理请求' });
+=======
+    const res = call(createRequestListener({ routes: [exploding], logger: silent }), '/dsh-pet-7340/config');
+    assert.equal(res.status, 500);
+    assert.deepEqual(JSON.parse(res.body()), { error: '读盘失败' });
+>>>>>>> yellow-hair
   });
 
   test('handler 异步拒绝同样收口为 500', async () => {
@@ -198,10 +254,17 @@ describe('createRequestListener —— 异常收口', () => {
         throw new Error('异步失败');
       },
     };
+<<<<<<< HEAD
     const res = call(createRequestListener({ routes: [exploding], logger: silent, security }), '/dsh-pet-7340/config');
     await new Promise((accept) => setImmediate(accept));
     assert.equal(res.status, 500);
     assert.match(res.body(), /本机服务暂时无法处理请求/);
+=======
+    const res = call(createRequestListener({ routes: [exploding], logger: silent }), '/dsh-pet-7340/config');
+    await new Promise((accept) => setImmediate(accept));
+    assert.equal(res.status, 500);
+    assert.match(res.body(), /异步失败/);
+>>>>>>> yellow-hair
   });
 
   test('头已发出的失败：断连而不是写坏响应（与插件 sendFile 的错误口径一致）', () => {
@@ -214,7 +277,11 @@ describe('createRequestListener —— 异常收口', () => {
         throw new Error('写一半炸了');
       },
     };
+<<<<<<< HEAD
     const res = call(createRequestListener({ routes: [partial], logger: silent, security }), '/dsh-pet-7340/x');
+=======
+    const res = call(createRequestListener({ routes: [partial], logger: silent }), '/dsh-pet-7340/x');
+>>>>>>> yellow-hair
     assert.equal(res.status, 200, '已经写出的头不改写');
     assert.equal(res.destroyed, true, '已写头之后必须断连');
   });
@@ -230,12 +297,16 @@ describe('listenStandaloneServer —— 端口与关闭', () => {
   test('首选端口被占用时向后顺延，关闭后端口真正释放', async () => {
     const blocker = await occupyPort();
     closers.push(blocker.close);
+<<<<<<< HEAD
     const server = await listenStandaloneServer({
       routes: [pluginLikeRoute()],
       logger: silent,
       security,
       port: blocker.port,
     });
+=======
+    const server = await listenStandaloneServer({ routes: [pluginLikeRoute()], logger: silent, port: blocker.port });
+>>>>>>> yellow-hair
     closers.push(server.close);
     assert.ok(server.port > blocker.port, `期望顺延，实际 ${server.port}（被占 ${blocker.port}）`);
 
@@ -256,6 +327,7 @@ describe('listenStandaloneServer —— 端口与关闭', () => {
   });
 
   test('插件路由经真实 HTTP 可用（前缀下 200，前缀外 404）', async () => {
+<<<<<<< HEAD
     const server = await listenStandaloneServer({ routes: [pluginLikeRoute()], logger: silent, security, port: 0 });
     closers.push(server.close);
     const inside = await fetch(`http://127.0.0.1:${server.port}/dsh-pet-7340/state`, {
@@ -483,3 +555,13 @@ test('bounded body replay preserves plugin readBody; chunked and stalled inputs 
     await server.close();
   }
 });
+=======
+    const server = await listenStandaloneServer({ routes: [pluginLikeRoute()], logger: silent, port: 0 });
+    closers.push(server.close);
+    const inside = await fetch(`http://127.0.0.1:${server.port}/dsh-pet-7340/state`);
+    assert.equal(inside.status, 200);
+    const outside = await fetch(`http://127.0.0.1:${server.port}/whatever`);
+    assert.equal(outside.status, 404);
+  });
+});
+>>>>>>> yellow-hair

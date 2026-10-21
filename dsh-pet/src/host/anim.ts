@@ -4,12 +4,18 @@
  * 用途：宿主侧其他插件想让桌宠播一段动画（"点播"），效果与右键菜单里点「动作」树完全一致
  * ——两端都复用同一个菜单动作处理函数，本模块只负责**判定该不该播、播哪一个**。
  *
+<<<<<<< HEAD
  * 两种形态（issue #122 第 1 条）：`name` = 池内的动画名，**名字必须在菜单能点到的集合里**；
  * `url` = 第三方自带的素材地址，**不查池**（素材在别人手里）。两者二选一，由本模块判定。
  *
  * 为什么单独一层：契约就是这几条校验规则。播放端对不存在的动画没有兜底（名字即文件名，
  * 404 → 加载失败 → 表现为"点了没反应"），所以名字校验是硬要求，且必须能脱离 HTTP 单测。
  * 本模块只依赖配置（动画池都在 animations 里，不碰文件系统），可完全离线测。
+=======
+ * 为什么单独一层：契约就是"名字必须在菜单能点到的集合里"。播放端对不存在的动画没有兜底
+ * （名字即文件名，404 → 加载失败 → 表现为"点了没反应"），所以名字校验是硬要求，且必须能
+ * 脱离 HTTP 单测。本模块只依赖配置（动画池都在 animations 里，不碰文件系统），可完全离线测。
+>>>>>>> yellow-hair
  *
  * 允许集合 = 右键菜单三级树叶里所有 `anim` 的并集。菜单树的唯一事实来源是
  * src/shared/menu.ts 的 buildMenuTree()，它取这 7 个池：idle / turn / drag / clicks /
@@ -18,6 +24,7 @@
  * 口径自包含实现一份；两边的守卫测试会同时钉住这份口径，任一侧改了池子就会有一边失败。
  */
 
+<<<<<<< HEAD
 import { findPetInstance } from './config';
 
 /** 点播失败的分类（路由原样透出给调用方） */
@@ -35,15 +42,28 @@ export type PetFacing = 'left' | 'right';
 export type AnimDecision =
   | { ok: true; petId: string; name?: string; url?: string; facing?: PetFacing }
   | { ok: false; reason: AnimFailure; message: string };
+=======
+import { findPetInstance, flattenPetList } from './config';
+
+/** 点播失败的分类（路由原样透出给调用方） */
+export type AnimFailure = 'bad-request' | 'unknown-pet' | 'unknown-animation';
+
+/** 决策结论：通过则给出最终要写进 S 的内容，否则给出显式原因 */
+export type AnimDecision =
+  { ok: true; petId: string; name: string } | { ok: false; reason: AnimFailure; message: string };
+>>>>>>> yellow-hair
 
 /** 字符串数组收窄（配置里的池子；非数组/空串 → 空数组） */
 function strings(v: unknown): string[] {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string' && x !== '') : [];
 }
 
+<<<<<<< HEAD
 /** 朝向收窄：只认两个字面量（大小写、空白、非字符串一律不算），不认识返回 `null` */
 const petFacing = (v: unknown): PetFacing | null => (v === 'left' || v === 'right' ? v : null);
 
+=======
+>>>>>>> yellow-hair
 /**
  * 该条目的 animations 配置 → 可点播的动画名（去重，保持首次出现顺序）。
  * 池子与顺序对齐 src/shared/menu.ts 的 buildMenuTree()：
@@ -95,6 +115,7 @@ export function animationNames(animations: unknown): string[] {
 }
 
 /**
+<<<<<<< HEAD
  * 第三方资源地址规范化：只放行 **http / https 的完整 URL**，其余一律 null（调用方回 bad-request）。
  *
  * 为什么只放行这两种 scheme：桌面端换源是 `el.src = url` **直连**（不经 `/thumb`），`file:` 会让
@@ -132,10 +153,19 @@ export function normalizeHttpUrl(v: unknown): string | null {
  * @param name 外部给的动画名（未规范化）
  * @param url 外部给的素材地址（未规范化）
  * @param facing 外部给的朝向（**可选**：没给 → 渲染端不动朝向）
+=======
+ * 把外部给的点播请求与当前配置核对成一个结论。
+ *
+ * @param cfg readAllConfig 的合并成品（所有字段已填满，这里不做兜底解析）
+ * @param requested `?pet=` 的原值（可为空串）
+ * @param active `resolveActivePetId()` 的结果（可为空串；无宠物时为空）
+ * @param name 外部给的动画名（未规范化）
+>>>>>>> yellow-hair
  */
 export function decideAnim(args: {
   cfg: Record<string, Record<string, unknown>>;
   requested: string;
+<<<<<<< HEAD
   name: unknown;
   url: unknown;
   facing?: unknown;
@@ -181,9 +211,33 @@ export function decideAnim(args: {
   // name 形态：名字必须是该宠物菜单里点得到的动画。播放端"名字即文件名"，播不存在的动画只会静默失败，
   // 所以必须在这里拦住，而不是写进 S 让前端白跑一趟。
   const allowed = animationNames(found.conf.animations);
+=======
+  active: string;
+  name: unknown;
+}): AnimDecision {
+  const { cfg, requested, active } = args;
+
+  const name = typeof args.name === 'string' ? args.name.trim() : '';
+  if (!name) return { ok: false, reason: 'bad-request', message: 'name 为空' };
+
+  // pet 缺省 = 当前桌宠；active 也为空时兜底 main（与 /broadcast 同一口径）
+  const petId = String(requested || active || 'main');
+  if (!flattenPetList(cfg).some((p) => String(p.id) === petId)) {
+    return { ok: false, reason: 'unknown-pet', message: '没有这只桌宠：' + petId };
+  }
+
+  // 名字必须是该宠物菜单里点得到的动画。播放端"名字即文件名"，播不存在的动画只会静默失败，
+  // 所以必须在这里拦住，而不是写进 S 让前端白跑一趟。
+  const conf = (findPetInstance(cfg, petId) ?? { conf: cfg.main ?? {} }).conf;
+  const allowed = animationNames(conf.animations);
+>>>>>>> yellow-hair
   if (!allowed.includes(name)) {
     return { ok: false, reason: 'unknown-animation', message: '没有这个动画：' + name };
   }
 
+<<<<<<< HEAD
   return { ok: true, petId, name, facing };
+=======
+  return { ok: true, petId, name };
+>>>>>>> yellow-hair
 }

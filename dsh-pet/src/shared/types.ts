@@ -70,11 +70,19 @@ export interface Animations {
 }
 
 /** 一只宠物（与 jsonc pets[i] 同形，position 嵌套）。
+<<<<<<< HEAD
  *  可选段（animations / animationWeights / extra / assetRoot / eventsRefreshSec / physics / font / confineToScreen /
  *  workStatusTexts / whisperModel / chatModel）为渲染期派生或「文件定义宠物」专用：
  *  - animations / animationWeights / eventsRefreshSec / physics / font / confineToScreen / whisperModel / chatModel：所属条目的条目级字段，由配置合并
  *    （host readAllConfig / 客户端 flattenConfigPets）在拍平时吹进每只实例——多实例共享。
  *    其中 physics / font / confineToScreen / whisperImageEnabled / chatImageEnabled / chatImageLimit /
+=======
+ *  可选段（animations / animationWeights / extra / assetRoot / eventsRefreshSec / physics / confineToScreen /
+ *  workStatusTexts / whisperModel / chatModel）为渲染期派生或「文件定义宠物」专用：
+ *  - animations / animationWeights / eventsRefreshSec / physics / confineToScreen / whisperModel / chatModel：所属条目的条目级字段，由配置合并
+ *    （host readAllConfig / 客户端 flattenConfigPets）在拍平时吹进每只实例——多实例共享。
+ *    其中 physics / confineToScreen / whisperImageEnabled / chatImageEnabled / chatImageLimit /
+>>>>>>> yellow-hair
  *    chatMemoryRounds / whisperModel / chatModel / eventsRefreshSec 是**全局默认**：文件宠物条目的合并基座取**用户层**
  *    （main-config.jsonc），即"设置页改一次，所有宠物（含 pet pack）都生效"；种类文件仍可在自己
  *    顶层覆盖（见 host/config.ts 的 GLOBAL_DEFAULT_KEYS）。其余条目级字段（animations /
@@ -119,7 +127,11 @@ export interface Pet {
   /** 全局默认：拖拽抛掷物理参数（用户在 main-config.jsonc 里写一次即对所有宠物生效，
    *  含 pet pack；种类文件顶层写了则用自己那份。host 合并已填默认，拍平时吹入） */
   physics?: PhysicsParams;
+<<<<<<< HEAD
   /** 全局默认：是否锁定在当前屏幕（归属规则同 physics）——抛掷与自主漫游都只在当前所在那块屏内活动 */
+=======
+  /** 全局默认：拖拽抛掷是否锁定在当前屏幕（归属规则同 physics） */
+>>>>>>> yellow-hair
   confineToScreen?: boolean;
   /** 条目级：工作状态气泡文案（二维数组，外层索引 = workStatus 档位 0..5，内层每档可多句随机抽；
    *  host 合并已填默认，拍平时吹入；整字段缺失 = 不弹工作状态文本，只播动画） */
@@ -129,8 +141,11 @@ export interface Pet {
   whisperModel?: ModelSelection;
   /** 全局默认：对话单独指定的服务商 + 模型（同上，都为空 = 跟随当前对话的模型） */
   chatModel?: ModelSelection;
+<<<<<<< HEAD
   /** 全局默认：字体（种类 / 字号 / 是否随宠物大小缩放；host 合并已填默认，拍平时吹入） */
   font?: FontConfig;
+=======
+>>>>>>> yellow-hair
 }
 
 /** 一处「服务商 + 模型」选择（config.jsonc 的 whisperModel / chatModel 段）。
@@ -159,6 +174,7 @@ export interface PhysicsParams {
   petCollision: boolean;
 }
 
+<<<<<<< HEAD
 /** 字体种类预设 id（config.jsonc 的 font.family 白名单；清单与对应字体栈见 src/shared/fonts.ts） */
 export type FontFamilyId = 'candy' | 'yahei' | 'youyuan' | 'kaiti' | 'simsun' | 'comic' | 'system';
 
@@ -177,6 +193,8 @@ export interface FontConfig {
   followPet: boolean;
 }
 
+=======
+>>>>>>> yellow-hair
 /** config.jsonc 全集——运行时直接使用（ANIM 即本类型） */
 export interface ClientConfig {
   /** 系统通知总开关：true=对话完成/生成失败/输出截断/权限申请/用户选择时弹出系统通知；缺失即配置错误 */
@@ -185,9 +203,14 @@ export interface ClientConfig {
   whisperImageEnabled: boolean;
   /** 对话配图开关：true=对话时把表情包清单交模型按语境选 1 张（可不选）；false=纯文本 */
   chatImageEnabled: boolean;
+<<<<<<< HEAD
   /** 是否锁定在当前屏幕：true=宠物只在当前所在那块屏内活动——甩出去只在松手时所在那块屏内弹
    *  （屏缝当墙），自主漫游也只在当前所在那块屏内走（越出屏缝的那一步直接取消）；
    *  false=跨屏飞行 / 跨屏行走（现状）。根字段（不属于 physics：它不改手感，只改「被允许去哪」），
+=======
+  /** 拖拽抛掷是否锁定在当前屏幕：true=甩出去只在松手时所在那块屏内弹（屏缝当墙）；
+   *  false=跨屏飞行（现状）。根字段（不属于 physics：它不改手感，只改「被允许去哪」），
+>>>>>>> yellow-hair
    *  条目级，缺失即配置错误 */
   confineToScreen: boolean;
   pets: Pet[];

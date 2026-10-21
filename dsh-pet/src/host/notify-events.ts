@@ -17,9 +17,12 @@
  *
  * 会话门（issue #82）：`session/event` 的四类事件先过 shouldNotifySession——
  * 子代理 / 委派会话（origin=subagent、delegationDepth>0）不发，否则每路子代理跑完都弹一条。
+<<<<<<< HEAD
  * 活动门（issue #114）：`turn/end completed`（「对话完成」）在**推帧前**还要确认这条会话确实没有
  * 在跑的活——在跑的下属 / 团队成员、后台任务、活跃提醒任一非空则丢弃这一帧（见 hasBlockingActivity）。
  * 判据由调用方延迟后经 `workspace/session-activity` 取得，拿不到就放行。
+=======
+>>>>>>> yellow-hair
  * 注意 `agent/error` **过不了这道门**：它的载荷只有 { turn, step, error }，不带任何会话标识，
  * 宿主的 throwError 也没有传会话进来（dsh-agent-loop）。子代理的生成失败若走这条路径仍会弹，
  * 要根治得让宿主把会话带进载荷。
@@ -62,6 +65,7 @@ export function shouldNotifySession(session: unknown): boolean {
   return true;
 }
 
+<<<<<<< HEAD
 /** 会话 id（活动门的定时器以它为键）：`header.id` 优先，回落顶层 `id`，都取不到用 'unknown'
  *  （与 index.ts work-status 侧的取法一致）。 */
 export function sessionIdOf(session: unknown): string {
@@ -117,6 +121,8 @@ export function hasBlockingActivity(activity: unknown): boolean {
   return false;
 }
 
+=======
+>>>>>>> yellow-hair
 /** turn/end reason.kind → 通知类别；不弹的分支返回 null（与 shared/notify.ts 过滤一致） */
 export function turnEndNotifyKind(kind: string | undefined): 'completed' | 'error' | 'max-tokens' | null {
   if (kind === 'completed') return 'completed';

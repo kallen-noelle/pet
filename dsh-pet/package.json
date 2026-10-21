@@ -74,6 +74,10 @@
   "scripts": {
     "bundle": "tsdown",
     "build:desktop-core": "node scripts/build-desktop-core.mjs",
+<<<<<<< HEAD
+=======
+    "desktop": "node --experimental-strip-types scripts/build-desktop-app.mts",
+>>>>>>> yellow-hair
     "watch": "tsdown --watch",
     "ensure:electron": "node scripts/ensure-electron.mjs",
     "start:desktop": "node scripts/start-desktop.mjs",
@@ -95,11 +99,16 @@
     "node": ">=22.12.0"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@anthropic-ai/sdk": "0.135.0",
     "@electron-internal/extract-zip": "^1.0.5",
     "@electron/get": "^5.1.0",
     "openai": "7.39.0",
     "zod": "4.6.7"
+=======
+    "@electron-internal/extract-zip": "^1.0.5",
+    "@electron/get": "^5.1.0"
+>>>>>>> yellow-hair
   },
   "dsh": {
     "bundle": {
@@ -109,8 +118,12 @@
       "dshReleases": {
         "0.1.7-rc.2": "incompatible",
         "0.2.0-rc.1": "compatible",
+<<<<<<< HEAD
         "0.2.0-rc.2": "compatible",
         "0.2.1-rc.2": "compatible"
+=======
+        "0.2.0-rc.2": "compatible"
+>>>>>>> yellow-hair
       }
     },
     "client": {
@@ -139,6 +152,10 @@
     "@types/node": "^26.2.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+<<<<<<< HEAD
+=======
+    "electron-builder": "^26.15.3",
+>>>>>>> yellow-hair
     "eslint": "^10.9.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "js-yaml": "^5.4.2",
@@ -151,4 +168,8 @@
     "typescript": "^5.5.0",
     "typescript-eslint": "^8.67.0"
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> yellow-hair

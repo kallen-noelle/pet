@@ -20,7 +20,23 @@ import { downloadArtifact } from '@electron/get';
 
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
+<<<<<<< HEAD
 export const packageRoot = resolve(here, '..');
+=======
+
+/** tsdown 构建产物在 lib/，源码在 src/，层级不一致，走 package.json 定位包根。 */
+function resolvePackageRoot(fromDir: string): string {
+  let dir = fromDir;
+  for (let i = 0; i < 5; i++) {
+    if (existsSync(join(dir, 'package.json'))) return dir;
+    const parent = resolve(dir, '..');
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return fromDir;
+}
+export const packageRoot = resolvePackageRoot(here);
+>>>>>>> yellow-hair
 export const defaultHelperMain = resolve(packageRoot, 'runtime', 'electron-helper', 'main.js');
 
 /** 协议行前缀：stdout/stdin 里以此开头的整行 JSON 属于 bridge 协议，其余为日志 */
@@ -581,4 +597,8 @@ const RESTART_MAX_FAILURES_DEFAULT = 12;
 function envPositiveInt(value: string | undefined, fallback: number): number {
   const parsed = Number.parseInt(String(value ?? ''), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> yellow-hair

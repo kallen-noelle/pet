@@ -1,4 +1,5 @@
 /**
+<<<<<<< HEAD
  * 气泡两个端点（`POST /dsh-pet-7340/broadcast` 与 `POST /dsh-pet-7340/bubble/clear`）的
  * **纯决策层**——两者写的是同一个叶子（`pets.<id>.say`），也共用同一条"pet 落到哪只"的规则，
  * 所以放在一起，免得两处各写一遍走样。
@@ -10,11 +11,21 @@
  * 为什么单独一层：本功能的契约就是这几条校验规则（文本非空、时长合法、宠物必须真实存在、
  * 配图给名称时须命中包内表情包池、给 url 时须是 http/https 完整地址、两种形态不得同时给），
  * 它们必须能脱离 HTTP 与真实文件系统被单测——路由层
+=======
+ * 第三方投喂（`POST /dsh-pet-7340/broadcast`）的**纯决策层**。
+ *
+ * 背景（issue #76）：宿主侧其他插件（女仆巡检验等）想说自己的话，需要一个把它们给的文本
+ * 放进桌宠气泡的入口。这个端点**不生成**内容，只搬运——和 /whisper（用 LLM 生成）分工不同。
+ *
+ * 为什么单独一层：本功能的契约就是这几条校验规则（文本非空、宠物必须真实存在、
+ * 配图必须命中包内表情包池），它们必须能脱离 HTTP 与真实文件系统被单测——路由层
+>>>>>>> yellow-hair
  * （src/host/index.ts）在源码形态下读不到包内 assets，测不了这些分支。
  *
  * 设计口径：
  * - **不设长度限制，也不限频**：投喂是显式的调用方行为，内容与频率都由调用方自己负责；
  *   宿主只保证"非空就搬运"，不做静默丢弃、截断或排队。
+<<<<<<< HEAD
  * - `duration` **不设上限**（调用方自己负责），但必须是 ≥0 的有限数；`0` = 字面意思「不显示」。
  * - `anim` 只有**严格 `false`** 才关闭动画联动（宽松口径：`"false"` 字符串之类一律按"要联动"
  *   走）。关闭时消费端不查 `events.whisper` 池、不换源。
@@ -22,11 +33,16 @@
  *   与对话选图共用同一份 matchMeme 校验）；`url` 是第三方自带的完整地址，**不查池**
  *   （issue #122 第 1 条：素材由第三方自己托管）。给了 url 就等于调用方显式选择了外部地址，
  *   不再是"注入"——但 scheme 仍由宿主卡在 http/https。
+=======
+ * - 配图只认**该桌宠条目表情包池内**的名称（池内命中即取其规范名）：杜绝第三方注入外部地址，
+ *   前端也就不会去加载任意 URL。与对话选图共用同一份 matchMeme 校验。
+>>>>>>> yellow-hair
  * - 失败一律返回明确 reason，不抛异常（路由据此回 HTTP 200 + ok:false，与 /chat 口径一致）。
  * - memeDirs 是参数而非模块常量：池的目录链由调用方（host/index.ts 的 memeDirsFor）唯一决定，
  *   便于测试注入临时目录（同 memes.ts 的约定）。
  */
 
+<<<<<<< HEAD
 import { findPetInstance } from './config';
 import { matchMeme, readMemePool } from './memes';
 // url 参数的 scheme 规则与 /anim 是**同一条**（两个"第三方投喂"端点不各写一份，免得走样）
@@ -51,6 +67,17 @@ export type BroadcastDecision =
 
 /** 清空气泡的决策结论（只有宠物解析这一步会失败） */
 export type BubbleClearDecision = { ok: true; petId: string } | { ok: false; reason: PetFailure; message: string };
+=======
+import { findPetInstance, flattenPetList } from './config';
+import { matchMeme, readMemePool } from './memes';
+
+/** 投喂失败的分类（路由原样透出给调用方） */
+export type BroadcastFailure = 'bad-request' | 'unknown-pet' | 'unknown-image';
+
+/** 决策结论：通过则给出最终要写进 S 的内容，否则给出显式原因 */
+export type BroadcastDecision =
+  { ok: true; petId: string; text: string; image?: string } | { ok: false; reason: BroadcastFailure; message: string };
+>>>>>>> yellow-hair
 
 /**
  * 投喂文本规范化：非字符串 / 纯空白 → 空串。
@@ -62,6 +89,7 @@ export function normalizeBroadcastText(text: unknown): string {
 }
 
 /**
+<<<<<<< HEAD
  * 气泡时长规范化：缺省 / null → 默认 10s；合法则原样；**非法返回 null**。
  * 同样由路由与决策层共用——路由先短路，别为一个必然失败的请求去碰磁盘。
  * 非法 = 非数字 / 非有限（NaN、Infinity）/ 负数。`0` 是合法值（字面意思：不显示）。
@@ -117,10 +145,20 @@ function resolvePetId(
  * @param url 外部给的配图地址（未规范化；空/缺省 = 不配图）
  * @param duration **已规范化**的时长（见 normalizeBroadcastDuration；路由保证非 null）
  * @param anim **已规范化**的联动开关（见 normalizeBroadcastAnim）
+=======
+ * 把外部给的 `{ text, image }` 与当前配置核对成一个结论。
+ *
+ * @param cfg readAllConfig 的合并成品（所有字段已填满，这里不做兜底解析）
+ * @param requested `?pet=` 的原值（可为空串）
+ * @param active `resolveActivePetId()` 的结果（可为空串；无宠物时为空）
+ * @param text 外部给的文本（未规范化）
+ * @param image 外部给的配图名（未规范化；空/缺省 = 不配图）
+>>>>>>> yellow-hair
  * @param memeDirs 条目（素材根）→ 表情包目录链（顺序即优先级）；决定池里哪些图真实存在
  */
 export function decideBroadcast(args: {
   cfg: Record<string, Record<string, unknown>>;
+<<<<<<< HEAD
   /** `?pet=` 的原值（**必填**：空串 → `pet-required`） */
   requested: string;
   text: unknown;
@@ -131,10 +169,20 @@ export function decideBroadcast(args: {
   memeDirs: (entry: string) => string[];
 }): BroadcastDecision {
   const { cfg, requested, memeDirs } = args;
+=======
+  requested: string;
+  active: string;
+  text: unknown;
+  image: unknown;
+  memeDirs: (entry: string) => string[];
+}): BroadcastDecision {
+  const { cfg, requested, active, memeDirs } = args;
+>>>>>>> yellow-hair
 
   const text = normalizeBroadcastText(args.text);
   if (!text) return { ok: false, reason: 'bad-request', message: 'text 为空' };
 
+<<<<<<< HEAD
   const who = resolvePetId(cfg, requested);
   if (!who.ok) return { ok: false, reason: who.reason, message: who.message };
   const petId = who.petId;
@@ -181,4 +229,24 @@ export function decideBubbleClear(args: {
   const who = resolvePetId(args.cfg, args.requested);
   if (!who.ok) return { ok: false, reason: who.reason, message: who.message };
   return { ok: true, petId: who.petId };
+=======
+  // pet 缺省 = 当前桌宠；active 也为空时兜底 main（让请求有个确定落点，而不是静默丢弃）
+  const petId = String(requested || active || 'main');
+  if (!flattenPetList(cfg).some((p) => String(p.id) === petId)) {
+    return { ok: false, reason: 'unknown-pet', message: '没有这只桌宠：' + petId };
+  }
+
+  const rawImage = typeof args.image === 'string' ? args.image.trim() : '';
+  if (!rawImage) return { ok: true, petId, text };
+
+  // 配图：只认池内命中的名称（命中后用池里的规范名，而不是外部原样传入的字符串）
+  // 池按**所属条目**取（与碎碎念/对话同一口径）：配图不跨宠物串池
+  const found = findPetInstance(cfg, petId);
+  const conf = found ? found.conf : (cfg.main ?? {});
+  const hit = matchMeme(readMemePool(conf.memes, memeDirs(found ? found.entry : 'main')), rawImage);
+  if (!hit) {
+    return { ok: false, reason: 'unknown-image', message: '配图不在表情包池内：' + rawImage };
+  }
+  return { ok: true, petId, text, image: hit.name };
+>>>>>>> yellow-hair
 }

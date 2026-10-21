@@ -18,12 +18,21 @@ export interface StateLeaf {
 
 /** S 的客户端视图（叶子已规范化：counter 必为数字） */
 export interface PollState {
+<<<<<<< HEAD
   /** 整份 S 的版本号（= 最后一次写入的编号）。回传成 `?since=` 表达"我手里这份是哪个版本"。
    *  **老宿主不带此字段** → undefined：消费端据此退回定时轮询——老宿主不认识 since/timeout，
    *  会立刻返回，不退避就变成狂打。 */
   counter?: number;
   sections: Record<string, StateLeaf>;
   pets: Record<string, Record<string, StateLeaf>>;
+=======
+  sections: Record<string, StateLeaf>;
+  pets: Record<string, Record<string, StateLeaf>>;
+  /** 配置版本（host 顺带下发）：变了说明配置被别处改过（桌面端右键改 display / 另一个页面保存 /
+   *  用户手工编辑配置文件），消费端据此重拉 /config。老版本 host 不带此字段 → undefined，
+   *  消费端按「无从判断」处理，不会误触发重拉。 */
+  configVersion?: string;
+>>>>>>> yellow-hair
 }
 
 /** 一次变化的叶子（path 用于日志/调试，leaf 用于渲染） */
@@ -43,6 +52,7 @@ function normLeaf(value: unknown): StateLeaf | null {
 /**
  * 拉一次 /state。
  * 失败 / HTTP 非 2xx / 形状不对 → null（轮询侧静默重试，与其余轮询同一容错口径）。
+<<<<<<< HEAD
  *
  * `wait` 传了就带 `?since=&timeout=` 走**长轮询**：宿主在"版本没变"时挂起，直到任意叶子被写过
  * （立刻返回）或超时。不传 = 立刻返回全量（改造前的语义）。
@@ -59,6 +69,17 @@ export async function fetchState(
       counter?: unknown;
       sections?: unknown;
       pets?: unknown;
+=======
+ */
+export async function fetchState(baseUrl = '/dsh-pet-7340/state'): Promise<PollState | null> {
+  try {
+    const res = await fetch(baseUrl, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const raw = (await res.json().catch(() => null)) as {
+      sections?: unknown;
+      pets?: unknown;
+      configVersion?: unknown;
+>>>>>>> yellow-hair
     } | null;
     if (!raw || typeof raw !== 'object') return null;
     const sections: Record<string, StateLeaf> = {};
@@ -79,10 +100,19 @@ export async function fetchState(
       }
       pets[petId] = leaves;
     }
+<<<<<<< HEAD
     return {
       counter: typeof raw.counter === 'number' && Number.isFinite(raw.counter) ? raw.counter : undefined,
       sections,
       pets,
+=======
+    // configVersion 是**顶层附带字段**（不属于叶子，walkLeaves 不会遍历它）：
+    // 这里必须显式带上——本函数是"重建对象"，不带上就等于把它丢了（host 挂了也白挂）。
+    return {
+      sections,
+      pets,
+      configVersion: typeof raw.configVersion === 'string' ? raw.configVersion : undefined,
+>>>>>>> yellow-hair
     };
   } catch {
     return null;
@@ -133,6 +163,7 @@ export function readBalance(leaf: StateLeaf): { state: BalanceState; manual: boo
 }
 
 /**
+<<<<<<< HEAD
  * 说话指令（`pets.<id>.say` 的两种形态）：
  *
  * - `say`：弹一个气泡。`duration` = 显示时长（毫秒；缺省 10s，`0` = 字面意思「不显示」）；
@@ -178,6 +209,17 @@ export function readSay(leaf: StateLeaf): SayCue | null {
     duration: typeof d.duration === 'number' && Number.isFinite(d.duration) && d.duration >= 0 ? d.duration : undefined,
     anim: typeof d.anim === 'boolean' ? d.anim : undefined,
   };
+=======
+ * 类型收窄：宠物说话叶子 → `{ text, image? }`（形状非法 / 空文本 → null，消费端跳过这一拍）。
+ * 碎碎念、命令气泡、对话回复共用这一个叶子——前端本来就是同一条展示链路
+ * （同一个 triggerWhisper、同一个气泡槽、同一批 events.whisper 动画）。
+ */
+export function readSay(leaf: StateLeaf): { text: string; image?: string } | null {
+  if (!leaf.data || typeof leaf.data !== 'object') return null;
+  const d = leaf.data as { text?: unknown; image?: unknown };
+  if (typeof d.text !== 'string' || !d.text) return null;
+  return { text: d.text, image: typeof d.image === 'string' ? d.image : undefined };
+>>>>>>> yellow-hair
 }
 
 /**
@@ -189,6 +231,7 @@ export function readWorkStatus(leaf: StateLeaf): WorkStatusSnapshot | null {
 }
 
 /**
+<<<<<<< HEAD
  * 朝向：`left` = 素材原样，`right` = 镜像（渲染端贴 `scaleX(-1)`）。
  * **与 host/anim.ts 的同名联合体是两份**——宿主不 import src/shared（同 `Corner`、`PositionMode`
  * 的处理方式），改动时两边要一起改。
@@ -294,13 +337,29 @@ export function readThrow(leaf: StateLeaf): { angle: number; power: number } | n
   if (typeof d.angle !== 'number' || !Number.isFinite(d.angle)) return null;
   if (typeof d.power !== 'number' || !Number.isFinite(d.power) || d.power <= 0) return null;
   return { angle: d.angle, power: d.power };
+=======
+ * 类型收窄：点播动画叶子 → 动画名（形状非法 / 空名 → null，消费端跳过这一拍）。
+ * **名字即文件名**：消费端拿到后交给菜单动作处理函数换源播放，所以这里只做形状校验；
+ * "这个动画是否存在于该宠物"由宿主在写入前保证（播放端对不存在的名字没有兜底）。
+ */
+export function readAnim(leaf: StateLeaf): { name: string } | null {
+  if (!leaf.data || typeof leaf.data !== 'object') return null;
+  const d = leaf.data as { name?: unknown };
+  if (typeof d.name !== 'string' || !d.name) return null;
+  return { name: d.name };
+>>>>>>> yellow-hair
 }
 
 /**
  * 动作端点：POST 一次，返回是否成功（`{ok:true}`）。
+<<<<<<< HEAD
  * 动作**不返回数据**——数据只有一个出口（/state）。调用方**不需要**在收到 ok 后再做什么：
  * 这些动作都会写叶子 → 顶层 `counter` 变 → 挂着的长轮询那一拍立刻返回，结果 0 延迟到达。
  * （改造前这里靠"前端主动叫醒一拍"，长轮询上线后那套已经删掉了。）
+=======
+ * 动作**不返回数据**——数据只有一个出口（/state），调用方收到 ok 后立刻 `pollStateNow()`
+ * 拉一拍即可 0 延迟看到结果（见 host 侧的路由说明）。
+>>>>>>> yellow-hair
  */
 export async function postAction(baseUrl: string, body?: unknown): Promise<boolean> {
   try {

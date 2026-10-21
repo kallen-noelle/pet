@@ -11,19 +11,30 @@
   <img alt="assets" src="https://img.shields.io/badge/assets-dynamic%20animations-ff69b4">
 </p>
 
+<<<<<<< HEAD
 > A floating desktop pet for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI: idle breathing, random actions (the 97 transparent animations — dozing off, playing with a Rubik's cube, writing code, hotpot…), turns, screen wandering, squash-and-stretch click reactions, throw-and-bounce drag physics, a right-click menu to play any action on demand, balance animations with a thinking bubble, **occasional self-talk and a chat dialog** (both can attach a meme image) — spawn as many pets as you want, live on your **desktop** (transparent always-on-top window), or add **brand-new pet species** (pet pack).
 > 一只住在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 里的桌面宠物：待机呼吸、随机动作（打瞌睡、玩魔方、写代码、吃火锅……97 个透明动画随时无缝衔接）、左右转向、屏幕漫游、点击 Q 弹、拖拽甩抛反弹、右键菜单点播动作、余额动画 + 头顶联想气泡、**时不时的碎碎念与对话**（都能配一张表情包）——可多开同屏，能脱离浏览器住上**桌面**（透明置顶小窗），也能自己添加**全新宠物种类**（pet pack）。
+=======
+> A floating desktop pet for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI: idle breathing, random actions (the 97 hand-drawn transparent animations — dozing off, playing with a Rubik's cube, writing code, hotpot…), turns, screen wandering, squash-and-stretch click reactions, throw-and-bounce drag physics, a right-click menu to play any action on demand, balance animations with a thinking bubble, **occasional self-talk and a chat dialog** (both can attach a meme image) — spawn as many pets as you want, live on your **desktop** (transparent always-on-top window), or add **brand-new pet species** (pet pack).
+> 一只住在 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 里的桌面宠物：待机呼吸、随机动作（打瞌睡、玩魔方、写代码、吃火锅……97 个手绘风透明动画随时无缝衔接）、左右转向、屏幕漫游、点击 Q 弹、拖拽甩抛反弹、右键菜单点播动作、余额动画 + 头顶联想气泡、**时不时的碎碎念与对话**（都能配一张表情包）——可多开同屏，能脱离浏览器住上**桌面**（透明置顶小窗），也能自己添加**全新宠物种类**（pet pack）。
+>>>>>>> yellow-hair
 
 ---
 
 ## 🚀 快速开始（安装插件）
 
+<<<<<<< HEAD
 **桌面应用（Electron 版）**：在应用内「插件管理」页的安装框里填 `dsh-pet`，不用开终端；需要在终端里操作时，用桌面应用自带的那份 CLI。
 
 **`dsh web`**：
 
 ```sh
 dsh plugin --profile web add dsh-pet
+=======
+```sh
+# --profile 填你实际在用的那个：桌面应用（Electron 版）→ desktop；dsh web → web
+dsh plugin --profile desktop add dsh-pet
+>>>>>>> yellow-hair
 ```
 
 装完**重开桌面应用**（`dsh web` 用户则重启 `dsh web`）才生效。宠物出现在界面右上角（默认配置角落，可在设置页修改）——全部透明动画开箱即用，无需任何生成流程。
@@ -34,6 +45,7 @@ dsh plugin --profile web add dsh-pet
 
 > 💡 不想每次都开着 DSH？`npx dsh-pet-standalone` 可以**完全不打开 DSH** 让桌宠住在桌面上，见下方「🧍 独立运行（完全不打开 DSH）」。
 
+<<<<<<< HEAD
 ### 安装后你会看到什么
 
 默认 `display: "both"`（浏览器与桌面都显示），重开 DSH 后两处会依次出现，不必手动开：
@@ -45,6 +57,8 @@ dsh plugin --profile web add dsh-pet
 
 > 已经装过 Electron（或设了 `DSH_PET_ELECTRON_PATH`）时第 2 步会跳过，桌面端几乎立刻出现；下载失败**只影响桌面模式**，浏览器里的宠物不受影响。探测顺序、手动触发与镜像/版本环境变量见下方「🪟 桌面模式（脱离浏览器，可选）」。
 
+=======
+>>>>>>> yellow-hair
 ## 🖥️ macOS 使用 mov（Safari 透明播放）
 
 macOS 的 Safari/WKWebView 下透明动画需用 `.mov` 素材，三步：
@@ -60,9 +74,15 @@ macOS 的 Safari/WKWebView 下透明动画需用 `.mov` 素材，三步：
 ## ✨ 功能特性
 
 - **纯粹的桌宠**：不掺业务功能——没有天气查询、系统监控、Agent 状态感知，就一件事：陪你（外加可选的余额展示、系统通知、碎碎念与对话，见配置节）。零核心改动；**默认零模型成本**——只有主动开启碎碎念（`pets[].whisperEnabled`）或主动发起对话时才会调用当前会话所用的模型，其余功能运行时零 LLM/API 调用
+<<<<<<< HEAD
 - **透明动画**：待机呼吸、打瞌睡、玩魔方、哼歌、炸毛、吐泡泡、玩水枪、小提琴演奏、蓝鲸现世、吃白饭、照镜子、三支舞、写代码、四季动作（放风筝、堆雪人、吃冰淇淋、放烟花……）全部无缝衔接
 - **永不停止的动画链**：每段动画播完立即按权重选下一个（默认 idle 10 / turn 5 / move 5，剩余 80% 归随机动作分类）
 - **屏幕漫游**：朝 facing 方向行走，自动检查空间、不走出屏幕（多屏时默认可骑缝跨屏；设置页「锁定在当前屏幕」开启后只在当前所在那块屏内走）
+=======
+- **手绘风透明动画**：待机呼吸、打瞌睡、玩魔方、哼歌、炸毛、吐泡泡、玩水枪、小提琴演奏、蓝鲸现世、吃白饭、照镜子、三支舞、写代码、四季动作（放风筝、堆雪人、吃冰淇淋、放烟花……）全部无缝衔接
+- **永不停止的动画链**：每段动画播完立即按权重选下一个（默认 idle 10 / turn 5 / move 5，剩余 80% 归随机动作分类）
+- **屏幕漫游**：朝 facing 方向行走，自动检查空间、不走出屏幕
+>>>>>>> yellow-hair
 - **点击 / 拖拽（弹簧跟手 + 甩抛反弹 + Q 弹）**：点击有随机回应动画（开心 / 害羞 / 傲娇）并「**Q 弹**」挤压回弹（垂直压扁 55% → easeOutBack 回弹过冲，贴地锚定）；拖拽为**过阻尼弹簧跟手**（不抖不飘、无 overshoot）；松手按最后轨迹估速（停顿/慢速 = 温柔放下原地停住）——**用力甩出即沿抛物线飞行：撞屏幕边缘按恢复系数反弹、落地摩擦减速至停，每次落地按冲击速度 Q 弹（轻落 0.8 ~ 重砸 0.55）**；物理与挤压曲线纯函数在 `src/shared/physics.ts`，浏览器与桌面严格同一手感（`prefers-reduced-motion` 时跳过挤压）
 - **物理参数化（0.2.5）**：拖拽抛掷手感全部由配置 `physics` 段驱动——重力（`gravity`，**0 = 无重力漂浮**）/ 碰壁恢复系数（`restitution`）/ 地面摩擦（`groundFriction`，0 = 冰面）/ 顶部反弹开关（`ceilingBounce`）/ 总力度（`throwPower`）/ 多宠物碰撞开关（`petCollision`），所有宠物共用（**全局默认**：设置页改一次对含 pet pack 的全部宠物生效；种类文件顶层可覆盖，见配置节）；**设置页「物理」区可图形化编辑**（6 个控件，与四个全局开关同一套语义：改完点「保存」整包写入用户配置，非法值就地红字提示、宿主也会拒绝）
 - **点击积分（0.2.5）**：飞行中的宠物被**按下**（速度 ≥ 400px/s）→ 点击处爆开粒子 + 弹出积分卡片；分数 = 速度/100 × 462/大小（线性，越快/越小分越高——小宠物目标小、更难命中，奖励更高）；静止/慢速点击维持普通点击回应动画（`prefers-reduced-motion` 时跳过粒子）
@@ -91,7 +111,10 @@ macOS 的 Safari/WKWebView 下透明动画需用 `.mov` 素材，三步：
 
 ### 桌面模式怎么装 / 关
 
+<<<<<<< HEAD
 - **插件安装**：桌面版在应用内「插件管理」页装 `dsh-pet`（见上方「快速开始（安装插件）」）
+=======
+>>>>>>> yellow-hair
 - **依赖 Electron**：首次拉起时自动探测（`DSH_PET_ELECTRON_PATH` 环境变量 → 本机 electron 包 → `~/.dsh/electron/` 落地路径），找不到会通过官方 @electron/get 自动下载到 `~/.dsh/electron/`（`npm run ensure:electron` 可手动触发）；Electron 不可用时仅日志告警，**不影响浏览器形态**
 - **开关 = 每只宠物的 `display` 字段（pets 必填，四个值）**：
   - `web` = 仅浏览器 overlay / `desktop` = 仅桌面模式 / `both` = 两者都显示 / `none` = 都不显示
@@ -136,7 +159,11 @@ npm run build && npm run standalone   # 仓库里（先构建）
 
 | 配置项                         | 说明                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+<<<<<<< HEAD
 | 设置页「桌宠配置」             | DSH 设置 → 桌宠配置：图形化编辑**大小 / 位置 / 边距**，支持**多开**（添加/删除宠物，每只独立配置）；全局开关也在设置页——系统通知（点保存才写入）、碎碎念配图 / 对话配图 / 锁定在当前屏幕（随「保存」一起写入）；保存**即时生效**，「同步」把项目内置的 `config.jsonc`（原文，含注释与全部高级字段）整份写入用户配置，既是恢复默认又留下一份可直接编辑的完整配置                                                       |
+=======
+| 设置页「桌宠配置」             | DSH 设置 → 桌宠配置：图形化编辑**大小 / 位置 / 边距**，支持**多开**（添加/删除宠物，每只独立配置）；全局开关也在设置页——系统通知（点保存才写入）、碎碎念配图 / 对话配图 / 抛掷锁定（随「保存」一起写入）；保存**即时生效**，「同步」把项目内置的 `config.jsonc`（原文，含注释与全部高级字段）整份写入用户配置，既是恢复默认又留下一份可直接编辑的完整配置                                                             |
+>>>>>>> yellow-hair
 | `pets`（config.jsonc）         | 默认宠物列表：`[{ "id", "name", "size", "balanceEnabled", "whisperEnabled", "workStatusEnabled", "display", "position": { "corner", "marginX", "marginY" } }]`；`display` 为 web/desktop/both/none（必填，缺失即配置错误）；`whisperEnabled` / `workStatusEnabled` = 碎碎念 / 工作状态气泡开关（默认：true）；多只即多开，`display` 含 desktop 的宠物出现在桌面窗口（与浏览器同屏渲染），首只为「添加宠物」的默认模板 |
 | `whisperPrompt`                | 碎碎念与对话共用的**人设系统提示词**（**条目级**：每个种类一份，种类文件顶层可覆盖）：默认「你是主人桌面上的Q版蓝发小女仆……20 字以内」；实际发出的 system = 它 + 一句「你的名字是“<宠物名>”。」                                                                                                                                                                                                                       |
 | `chatMemoryRounds`             | 每次对话请求携带的最近历史轮数（默认 5；1 轮 = 1 问 1 答；0 = 不带历史）：`memory.json` **全存不删**，此值只决定截取多少进上下文。**全局默认**（设置页「AI 模型与对话上下文」区一个数字输入框，改一次对所有宠物生效，含 pet pack；种类文件顶层可覆盖）                                                                                                                                                                |
@@ -239,12 +266,19 @@ $DSH_HOME/dsh-pet/pet/
 ## 🗑️ 卸载
 
 ```sh
+<<<<<<< HEAD
 # dsh web：--profile 填 web
 dsh plugin --profile web remove dsh-pet
 ```
 
 桌面应用（Electron 版）在应用内「插件管理」页卸载。
 
+=======
+# --profile 填你安装时用的那个：桌面应用 desktop、dsh web → web
+dsh plugin --profile desktop remove dsh-pet
+```
+
+>>>>>>> yellow-hair
 插件在本机落下的全部位置（设置页「卸载与存储」区块也列出这些，且路径按你的机器实时解析）：
 
 - `$DSH_HOME/dsh-pet/` —— 插件用户数据：自定义配置 `main-config.jsonc`、对话记忆 `memory.json`、自定义动画素材 `main-animation/`、自定义表情包 `memes/`、文件宠物 `pet/`

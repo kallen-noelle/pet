@@ -2,8 +2,12 @@
  * 第三方投喂（`POST /dsh-pet-7340/broadcast`，issue #76）的决策层单测。
  *
  * 为什么测这一层而不是只测 HTTP：本功能的契约就是这几条校验规则（文本非空、宠物存在、
+<<<<<<< HEAD
  * 配图给名称时必须在包内表情包池内、给 url 时必须是 http/https 完整地址、两种形态不得同时给）。
  * 路由层在源码形态下读不到包内 assets（PACKAGE_ROOT 解析成
+=======
+ * 配图必须在包内表情包池内）。路由层在源码形态下读不到包内 assets（PACKAGE_ROOT 解析成
+>>>>>>> yellow-hair
  * <pkg>/src），覆盖不到这些分支——所以规则抽到 ./broadcast 里单测，路由只剩搬运。
  *
  * 用 Node 内置 test runner（node:test），不引入任何 npm 依赖。
@@ -14,6 +18,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
+<<<<<<< HEAD
 import {
   decideBroadcast,
   decideBubbleClear,
@@ -21,6 +26,9 @@ import {
   normalizeBroadcastDuration,
   normalizeBroadcastText,
 } from './broadcast.ts';
+=======
+import { decideBroadcast, normalizeBroadcastText } from './broadcast.ts';
+>>>>>>> yellow-hair
 
 /** 池里真实存在的两张图 */
 const IN_POOL = '可爱';
@@ -38,11 +46,17 @@ const decide = (over: Partial<Parameters<typeof decideBroadcast>[0]> = {}) =>
   decideBroadcast({
     cfg,
     requested: 'main',
+<<<<<<< HEAD
     text: '主人，该喝水了',
     image: undefined,
     url: undefined,
     duration: 10000,
     anim: true,
+=======
+    active: '',
+    text: '主人，该喝水了',
+    image: undefined,
+>>>>>>> yellow-hair
     memeDirs: () => [memesDir],
     ...over,
   });
@@ -117,12 +131,25 @@ describe('decideBroadcast —— 宠物选择', () => {
     assert.equal(d.ok === true && d.petId, 'test1');
   });
 
+<<<<<<< HEAD
   test('不指定 pet → pet-required（缺省链已删除：绝不退到"当前桌宠"/列表第一只）', () => {
     for (const empty of ['', '   ']) {
       const d = decide({ requested: empty });
       assert.equal(d.ok, false);
       assert.equal(d.ok === false && d.reason, 'pet-required');
     }
+=======
+  test('不指定 pet → 落到当前桌宠（active）', () => {
+    const d = decide({ requested: '', active: 'test1' });
+    assert.equal(d.ok, true);
+    assert.equal(d.ok === true && d.petId, 'test1');
+  });
+
+  test('不指定且没有当前桌宠 → 兜底 main（不静默丢弃）', () => {
+    const d = decide({ requested: '', active: '' });
+    assert.equal(d.ok, true);
+    assert.equal(d.ok === true && d.petId, 'main');
+>>>>>>> yellow-hair
   });
 
   test('指定不存在的宠物 → unknown-pet（显式失败，不静默写进一个没人看的叶子）', () => {
@@ -216,6 +243,7 @@ describe('decideBroadcast —— 配图只认该桌宠条目的表情包池', ()
     assert.equal(decide({ cfg: two, memeDirs: dirs, requested: 'main', image: IN_POOL }).ok, true);
   });
 });
+<<<<<<< HEAD
 
 describe('normalizeBroadcastDuration —— 气泡时长（issue #122 第 5 条）', () => {
   test('缺省 / null → 10s（老调用方的行为一个字不变）', () => {
@@ -351,3 +379,5 @@ describe('decideBroadcast —— 配图的 url 形态（第三方自带素材，
     assert.equal(d.ok === false && d.reason, 'unknown-pet');
   });
 });
+=======
+>>>>>>> yellow-hair

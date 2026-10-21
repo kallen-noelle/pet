@@ -24,6 +24,7 @@ import {
   readBalance,
   readSay,
   readAnim,
+<<<<<<< HEAD
   readPosition,
   readThrow,
   readLock,
@@ -34,6 +35,10 @@ import {
   type SayCue,
   type LockState,
   type PetFacing,
+=======
+  readWorkStatus,
+  takeChanged,
+>>>>>>> yellow-hair
 } from '../shared/state';
 import { WORK_STATUS_INDEX, type WorkStatusSnapshot } from '../shared/work-status';
 import { makeBalanceBubble, makeWhisperBubble } from './bubble';
@@ -53,6 +58,7 @@ import {
 import { TOOLTIP_CLASS, TOOLTIP_CSS, TOOLTIP_GAP_RATIO, tooltipPlacement } from '../shared/tooltip';
 // 对话弹窗：与桌面共用同一份组件（数据经 host /chat 读写同一份记忆）
 import { mountChatDialog } from '../shared/chat';
+<<<<<<< HEAD
 import { registerPose } from './pose';
 import { registerProgress } from './progress';
 // 字体（全局配置 font）：种类 → CSS 字体栈、字号 → 最终 px。换算只在 shared 一处，
@@ -61,6 +67,15 @@ import { fontStackOf, resolveFontPx } from '../shared/fonts';
 import { petBridge } from './settings';
 import { notifyFromFrame } from './notify';
 
+=======
+import { petBridge } from './settings';
+import { notifyFromFrame } from './notify';
+
+/** 容器注册的「立刻拉一拍 /state」钩子：前端动作（右键菜单 / 对话弹窗）完成后调用——
+ *  数据只从 S 来（动作端点不回数据），但叫醒一拍就能 0 延迟看到结果，不用等下一个 1s。
+ *  未注册（容器还没挂）时是空操作，调用方不需要判空。 */
+export const statePoller: { now: () => void } = { now: () => {} };
+>>>>>>> yellow-hair
 // 拖拽抛掷物理（弹簧跟手 + 甩抛 + 重力反弹）：两端共用同一份纯计算（src/shared/physics.ts）
 import {
   estimateReleaseVelocity,
@@ -75,7 +90,10 @@ import {
   SQ_SQUASH,
   squashScale,
   landingSquash,
+<<<<<<< HEAD
   throwVelocity,
+=======
+>>>>>>> yellow-hair
   type DragSample,
   type PetCollisionSlot,
   type ThrowState,
@@ -100,6 +118,7 @@ const THUMB_EXT = ANIMATION_EXT;
 /** 余额气泡展示时长（ms）：定时自动消失，与动画生命周期解耦 */
 const BUBBLE_DURATION_MS = 10 * 1000;
 
+<<<<<<< HEAD
 /** /state 长轮询的挂起时长（ms）：宿主在"版本没变"时最多挂这么久。
  *  1s 是**前端自己定的下限**——空闲时请求率因此与改造前完全一致（1 req/s），
  *  而叶子一变宿主立刻返回，前端不必再等满一拍。 */
@@ -109,6 +128,8 @@ const STATE_WAIT_MS = 1000;
  *  不退避就是忙等；网络失败同理。 */
 const STATE_FALLBACK_MS = 1000;
 
+=======
+>>>>>>> yellow-hair
 /** 内联 CSS —— 注入一次（官方插件标准做法） */
 const css = [
   '.dsh-pet-root{position:fixed;z-index:40;pointer-events:none;user-select:none}',
@@ -166,25 +187,32 @@ export function makePetUI(rt: {
     balance,
     balanceTick,
     balanceNoticeTick,
+<<<<<<< HEAD
     balanceManual,
+=======
+>>>>>>> yellow-hair
     workStatus,
     workStatusTick,
     say,
     sayTick,
     animCue,
     animCueTick,
+<<<<<<< HEAD
     posCue,
     posCueTick,
     throwCue,
     throwCueTick,
     lock,
     lockTick,
+=======
+>>>>>>> yellow-hair
     arena,
   }: {
     cfg: RuntimePet;
     balance: BalanceState | null;
     balanceTick: number;
     balanceNoticeTick: number;
+<<<<<<< HEAD
     /** 这次余额是不是**用户手动要的**（右键「查看余额」/ `/balance` 命令；host 在叶子里标 manual）。
      *  手动请求一律给答复：即使本宠物关掉了 balanceEnabled，也要弹气泡（开关只关自动轮询）。 */
     balanceManual: boolean;
@@ -217,13 +245,27 @@ export function makePetUI(rt: {
      *  这里自己定时解除（见 shared/state.ts 的 readLock）。 */
     lock?: LockState;
     lockTick: number;
+=======
+    workStatus: WorkStatusSnapshot | null;
+    workStatusTick: number;
+    /** 本宠物的「说一句话」（碎碎念/命令气泡/对话回复三合一；容器从 S 分发下来） */
+    say?: { text: string; image?: string; seq: number };
+    sayTick: number;
+    /** 本宠物的「点播动画」指令（其他插件经 POST /anim 写进 S；容器从 S 分发下来）。
+     *  注意与组件内既有的 `anim`（**当前正在播的**动画名）区分：这个只是"要播什么"的指令。 */
+    animCue?: { name: string; seq: number };
+    animCueTick: number;
+>>>>>>> yellow-hair
     arena: ReactNS.MutableRefObject<{ slots: Record<string, PetCollisionSlot> }>;
   }) {
     // ---- 尺寸（由配置传入；容器/设置页更新后即时跟随）----
     const [size, setSize] = useState(cfg.size);
+<<<<<<< HEAD
     // 字号（全局配置 font）：按本宠物尺寸算好最终 px 注入 root（气泡与悬浮提示读它）。
     // 随 size / cfg.font 变化即时重算——followPet 关闭时结果与 size 无关（见 resolveFontPx）。
     const fontPx = resolveFontPx(cfg.font, size);
+=======
+>>>>>>> yellow-hair
     const halfW = size / 2;
     const halfH = (size * 9) / 16 / 2;
     // 舞台脚底垫高（宠物站立于脚底线）：命中框 y、碰撞 body 框、渲染 stage 位移共用
@@ -254,8 +296,11 @@ export function makePetUI(rt: {
     // 碎碎念当前文本（本宠物独立生成的句子）+ 配图名称（开启配图时由 host 随机抽定，随文本一起来）
     const [whisperText, setWhisperText] = useState<string | null>(null);
     const [whisperImage, setWhisperImage] = useState<string | undefined>(undefined);
+<<<<<<< HEAD
     /** 配图的 url 形态（第三方自带地址；与 whisperImage 二选一，见 triggerWhisper） */
     const [whisperUrl, setWhisperUrl] = useState<string | undefined>(undefined);
+=======
+>>>>>>> yellow-hair
     // 工作状态气泡：DSH 会话状态联动（workStatusEnabled 开启时）——终态 10s 自动收起、非终态常驻
     const [workBubbleOn, setWorkBubbleOn] = useState(false);
     const workBubbleTimerRef = useRef<number | null>(null);
@@ -280,6 +325,7 @@ export function makePetUI(rt: {
     const videoBRef = useRef<HTMLVideoElement | null>(null);
     const frontRef = useRef(0);
     const pendingRef = useRef<null | { anim: string; once: boolean; gen: number }>(null);
+<<<<<<< HEAD
     /** 「这一段直接播这个地址」的一次性交接位（POST /anim 的 url 形态，issue #122 第 1 条）。
      *  为什么用 ref 而不是 state：它只在**设置它的那一拍**有效——switchTo 一进来就取走并清空，
      *  之后任何一次普通换源都不会误用上一个地址（换成 state 的话，"清空"本身会再触发一次 effect）。 */
@@ -300,6 +346,9 @@ export function makePetUI(rt: {
     const frozenRef = useRef(lock?.locked === true && lock.expiresAt > Date.now());
     /** 解冻定时器：宿主不会到点推送"锁没了"，这里按叶子里的 expiresAt 自己解除 */
     const lockTimerRef = useRef<number | null>(null);
+=======
+    const genRef = useRef(0);
+>>>>>>> yellow-hair
     const dragRef = useRef({
       active: false,
       dragging: false,
@@ -340,6 +389,7 @@ export function makePetUI(rt: {
     const mountedRef = useRef(false);
     const inflightRef = useRef<AbortController[]>([]);
 
+<<<<<<< HEAD
     /**
      * 播放回执上报（issue #122 第 3 项）：把这一段点播的**真实**状态告诉 host。
      *
@@ -366,6 +416,9 @@ export function makePetUI(rt: {
       // 提前返回时它会留到下一次普通换源上，把那个动画误播成这个地址。
       const cueUrl = cueUrlRef.current;
       cueUrlRef.current = null;
+=======
+    const switchTo = (next: string, nextOnce: boolean) => {
+>>>>>>> yellow-hair
       if (!next) return;
       const pending = pendingRef.current;
       if (pending && pending.anim === next && pending.once === nextOnce) {
@@ -376,12 +429,15 @@ export function makePetUI(rt: {
           const front = frontRef.current === 0 ? videoARef : videoBRef;
           if (front.current) startSquash(front.current);
         }
+<<<<<<< HEAD
         // 这次点播的目标**本来就在播**（没有换源，但确实在播）→ 如实回 playing，
         // 否则调用方只能干等到 timeout（host 对终态幂等，重复上报无害）
         if (cuePlaybackId !== null) {
           playingPlaybackRef.current = cuePlaybackId;
           reportPlayback(cuePlaybackId, 'playing');
         }
+=======
+>>>>>>> yellow-hair
         return;
       }
       const gen = ++genRef.current;
@@ -403,6 +459,7 @@ export function makePetUI(rt: {
             nextOnce,
         );
       }
+<<<<<<< HEAD
       // 素材地址两条路（issue #122 第 1 条）：url 形态直接用第三方给的**完整地址**（宿主已卡在
       // http/https）；name 形态照旧按「素材根 + 名字」拼（名字即文件名）。下面的 fetch + blob
       // 一段两条路共用，不做区分——正常请求 URL 就是。
@@ -413,14 +470,25 @@ export function makePetUI(rt: {
           '/' +
           encodeURIComponent(next) +
           THUMB_EXT;
+=======
+      const assetUrl =
+        '/dsh-pet-7340/thumb/' +
+        encodeURIComponent(cfg.assetRoot ?? cfg.id) +
+        '/' +
+        encodeURIComponent(next) +
+        THUMB_EXT;
+>>>>>>> yellow-hair
       el.loop = !nextOnce;
       el.muted = true;
       el.autoplay = true;
       el.playsInline = true;
       el.onended = nextOnce ? handleEnded : null;
+<<<<<<< HEAD
       // 元素级失败（解码 / 格式不支持）：既有实现**完全没有检测**（只表现为"点了没反应"），
       // 这里补一条回执——只上报，不改播放控制（换源时与 onended 一起清掉，见 onReady）
       el.onerror = cuePlaybackId === null ? null : () => reportPlayback(cuePlaybackId, 'failed', 'decode-error');
+=======
+>>>>>>> yellow-hair
       // 素材加载走 fetch+blob：一次拿全整文件，绕开 video 流式加载在 DSH WebServer 上偶发的
       // stalled/连接竞争（用户环境实测：慢点 5 次全部 stall、动画永不切换）。10s 超时兜底。
       // cache 用默认策略：服务端 cache-control 是 max-age=3600（src/host/index.ts:140），有效期内
@@ -456,11 +524,14 @@ export function makePetUI(rt: {
           if (!mountedRef.current) return; // 卸载后的 abort：静默
           if (pendingRef.current?.gen !== gen) return; // 已被更新的切换覆盖
           pendingRef.current = null; // 释放挂起的 pending：后续点击不再被困在防重/覆盖循环里
+<<<<<<< HEAD
           // 素材没拿到 → 这一段点播不可能播起来，如实回 failed（而不是让调用方干等）
           if (cuePlaybackId !== null) {
             if (playingPlaybackRef.current === cuePlaybackId) playingPlaybackRef.current = null;
             reportPlayback(cuePlaybackId, 'failed', 'asset-load');
           }
+=======
+>>>>>>> yellow-hair
           console.warn(
             '[dsh-pet] 素材加载失败 pet=' +
               cfg.id +
@@ -481,6 +552,7 @@ export function makePetUI(rt: {
           // 拆雷：降级为背景的视频继续播完会触发它身上残留的 onended → handleEnded，
           // 掐断当前前台动画（历史上表现为随机急速跳转/雪崩）。清 handler + 停播彻底消除。
           old.current.onended = null;
+<<<<<<< HEAD
           old.current.onerror = null;
           old.current.pause();
           // 被换下去的那一段若属第三方点播且没播完 → 如实回 cancelled。
@@ -506,6 +578,14 @@ export function makePetUI(rt: {
             if (playingPlaybackRef.current === cuePlaybackId) playingPlaybackRef.current = null;
             reportPlayback(cuePlaybackId, 'failed', 'play-rejected');
           });
+=======
+          old.current.pause();
+        }
+        frontRef.current = frontRef.current === 0 ? 1 : 0;
+        pendingRef.current = null;
+        el.style.transform = facingRef.current === 'right' ? 'scaleX(-1)' : '';
+        el.play().catch(() => {});
+>>>>>>> yellow-hair
         // 点击 Q 弹：等新动画就位后才压（压的是新点击动画的首帧，与桌面一致）
         if (pendingSquashRef.current) {
           pendingSquashRef.current = false;
@@ -518,6 +598,7 @@ export function makePetUI(rt: {
 
     // ---- 状态驱动播放 ----
     useEffect(() => {
+<<<<<<< HEAD
       switchTo(anim, once, cuePlayback);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [anim, once, seq, cuePlayback]);
@@ -554,12 +635,22 @@ export function makePetUI(rt: {
           buffering: el.readyState < 3 || el.seeking,
         };
       });
+=======
+      switchTo(anim, once);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [anim, once, seq]);
+    useEffect(() => {
+      mountedRef.current = true;
+>>>>>>> yellow-hair
       const bu = blobUrlRef.current;
       const inflight = inflightRef.current;
       return () => {
         mountedRef.current = false;
+<<<<<<< HEAD
         unregisterPose(); // 卸载即摘除：口子静默失效比读到陈旧值安全
         unregisterProgress();
+=======
+>>>>>>> yellow-hair
         for (const c of inflight) c.abort();
         inflight.length = 0;
         stopMove();
@@ -569,7 +660,10 @@ export function makePetUI(rt: {
         if (bu.a) URL.revokeObjectURL(bu.a);
         if (bu.b) URL.revokeObjectURL(bu.b);
       };
+<<<<<<< HEAD
       // eslint-disable-next-line react-hooks/exhaustive-deps -- 挂载/卸载各跑一次：闭包读的是 refs 与稳定 props
+=======
+>>>>>>> yellow-hair
     }, []);
     useEffect(
       () => () => {
@@ -592,6 +686,7 @@ export function makePetUI(rt: {
       },
       [],
     );
+<<<<<<< HEAD
     // 余额事件：容器拉取成功后递增 balanceTick → 按档位播放事件动画 + 弹气泡。
     // 两条门控分得很清楚：
     //  - 弹气泡：**手动请求**（右键「查看余额」/ `/balance` 命令，host 在叶子里标了 manual）无条件弹——
@@ -616,6 +711,18 @@ export function makePetUI(rt: {
         bubbleTimerRef.current = window.setTimeout(() => setBubbleOn(false), BUBBLE_DURATION_MS);
       }
       if (!cfg.balanceEnabled) return; // 档位动画只属于启用余额的宠物
+=======
+    // 余额事件：容器拉取成功后递增 balanceTick → 按档位播放事件动画 + 弹气泡
+    // （仅启用余额功能的宠物触发：未启用则该宠物完全不播余额动画、不显示气泡；
+    //   无效/不支持按设计不触发动画，错误由容器侧显式上报）
+    const prevTickRef = useRef(0);
+    useEffect(() => {
+      if (!cfg.balanceEnabled) return; // 未启用余额功能 -> 该宠物对余额事件完全免疫
+      if (balanceTick === 0 || balanceTick === prevTickRef.current) return;
+      prevTickRef.current = balanceTick;
+      if (!balance || !balance.ok) return;
+      const p = balancePercent(balance);
+>>>>>>> yellow-hair
       if (p === undefined) return; // 当前数据源没有百分比语义（如 DeepSeek 余额），不触发档位动画
       const pool = petAnims.events?.balance;
       if (!pool || pool.length === 0) {
@@ -642,6 +749,13 @@ export function makePetUI(rt: {
           name,
       );
       stopMove();
+<<<<<<< HEAD
+=======
+      setBubbleOn(true);
+      // 气泡 10s 定时消失（与动画解耦：即使动画被点击/拖拽打断，气泡也按时收起；重复触发先清旧定时器）
+      if (bubbleTimerRef.current !== null) window.clearTimeout(bubbleTimerRef.current);
+      bubbleTimerRef.current = window.setTimeout(() => setBubbleOn(false), BUBBLE_DURATION_MS);
+>>>>>>> yellow-hair
       setOnce(true);
       setAnim(name);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -649,6 +763,7 @@ export function makePetUI(rt: {
 
     // 余额不可用（服务商未登记 / 缺凭证 / 抓取失败）：容器判定该提示时递增 balanceNoticeTick
     // → 本宠物只弹「文字说明」气泡，不播档位动画（非 ok 没有百分比语义，档位动画无从映射）。
+<<<<<<< HEAD
     // 门控：自动轮询要求 balanceEnabled；**手动请求无条件弹**（用户问了就该有答复，包括"服务商不支持"这件事）。
     const prevNoticeRef = useRef(0);
     useEffect(() => {
@@ -657,6 +772,14 @@ export function makePetUI(rt: {
       prevNoticeRef.current = balanceNoticeTick;
       // 占用锁：同上面那条余额事件——自动来源不看，手动请求照常（用户问了就得有答复）
       if (frozenRef.current && !balanceManual) return;
+=======
+    // 门控与成功路径一致（仅 balanceEnabled 的宠物提示）；显隐/定时与成功路径同一套（10s 自动消失）。
+    const prevNoticeRef = useRef(0);
+    useEffect(() => {
+      if (!cfg.balanceEnabled) return; // 未启用余额功能 -> 该宠物对余额事件完全免疫
+      if (balanceNoticeTick === 0 || balanceNoticeTick === prevNoticeRef.current) return;
+      prevNoticeRef.current = balanceNoticeTick;
+>>>>>>> yellow-hair
       if (!balance || balance.ok) return;
       setBubbleOn(true);
       if (bubbleTimerRef.current !== null) window.clearTimeout(bubbleTimerRef.current);
@@ -677,12 +800,15 @@ export function makePetUI(rt: {
       if (!cfg.workStatusEnabled) return; // 未启用工作状态联动 -> 该宠物完全免疫
       if (workStatusTick === 0 || workStatusTick === prevWorkTickRef.current) return;
       prevWorkTickRef.current = workStatusTick;
+<<<<<<< HEAD
       // 占用锁：锁生效时不响应工作状态（它是**自动**来源——任务事件驱动的，没有"用户手动要"这条路）。
       // 判在 tick 消费**之后**：占用期间的状态变化当过去了，解冻时由 applyFreeze 的
       // resumeWorkStatusAnim() 重新对齐**当前**状态，所以不会停在旧档位上。
       // 注意这里不挡宿主：`sections.workStatus` 是所有宠物共用一份，宿主"跳过写入"会连带静音
       // 别的宠物（issue #122 要的是"只控制指定 main"），所以按宠物在渲染端忽略。
       if (frozenRef.current) return;
+=======
+>>>>>>> yellow-hair
       if (!workStatus || workStatus.state === null) {
         // 调试：状态回空闲（仅打印切换日志；动画改成"播完即停"，见下）
         console.log(
@@ -770,8 +896,13 @@ export function makePetUI(rt: {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [workStatusTick]);
 
+<<<<<<< HEAD
     // 说话（碎碎念周期 / 命令气泡 / 对话回复 / 清空**四合一**）：容器统一轮询 /state 后，把属于
     // 本宠物的 pets.<id>.say 分发下来；seq 变化即执行——`clear` 形态收起气泡，其余弹气泡。
+=======
+    // 说话（碎碎念周期 / 命令气泡 / 对话回复**三合一**）：容器统一轮询 /state 后，把属于本宠物的
+    // pets.<id>.say 分发下来；seq 变化即播说话动画 + 弹气泡（10s）。
+>>>>>>> yellow-hair
     // 改造前这里是两条独立轮询（/whisper 周期 + /broadcast 1s）、host 侧也是两个缓存；
     // 现在只有一个数据源（S），"首拉记基线"由容器统一处理。
     // 不受 whisperEnabled 门控：那个字段只关自动周期，命令/对话的手动语义永远可用。
@@ -779,11 +910,15 @@ export function makePetUI(rt: {
     useEffect(() => {
       if (!say || say.seq === prevSaySeqRef.current) return;
       prevSaySeqRef.current = say.seq;
+<<<<<<< HEAD
       if (say.kind === 'clear') {
         clearWhisperBubble();
         return;
       }
       triggerWhisper(say.text, say.image, say.url, say.duration, say.anim);
+=======
+      triggerWhisper(say.text, say.image);
+>>>>>>> yellow-hair
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sayTick]);
 
@@ -794,6 +929,7 @@ export function makePetUI(rt: {
     useEffect(() => {
       if (!animCue || animCue.seq === prevAnimSeqRef.current) return;
       prevAnimSeqRef.current = animCue.seq;
+<<<<<<< HEAD
       // 朝向（POST /anim 的 facing，可选）：**必须在换源之前落地**——switchTo 是在 onReady 里按
       // facingRef.current 贴 scaleX(-1) 的，晚一步就赶不上这一趟。
       // 且必须连 facingRef **一起立即同步**：setFacing 是异步的，只调它的话本次 switchTo 读到的
@@ -874,11 +1010,28 @@ export function makePetUI(rt: {
         // 整池随机抽 1 槽（避开当前正播动画，避免连续重复）；槽位若为数组候选再档内随机
         name = pickSlot(pick(pool, animRef.current), animRef.current);
       }
+=======
+      handleMenuAction({ label: animCue.name, anim: animCue.name });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [animCueTick]);
+
+    // 碎碎念触发（本宠物）：随机抽 events.whisper 动画 + 弹文本气泡（10s 消失，与动画解耦）
+    // image：host 侧随机抽定的配图名称（未开配图/池为空则 undefined）——与文本同一次触发一起来
+    const triggerWhisper = (text: string, image?: string) => {
+      const pool = petAnims.events?.whisper;
+      if (!pool || pool.length === 0) {
+        console.error('[dsh-pet] 配置缺少 animations.events.whisper，无法播放碎碎念动画');
+        return;
+      }
+      // 整池随机抽 1 槽（避开当前正播动画，避免连续重复）；槽位若为数组候选再档内随机
+      const name = pickSlot(pick(pool, animRef.current), animRef.current);
+>>>>>>> yellow-hair
       console.log(
         '[dsh-pet] ' +
           new Date().toTimeString().slice(0, 8) +
           ' whisper pet=' +
           cfg.id +
+<<<<<<< HEAD
           (name === null ? ' （不联动动画）' : ' -> [' + name + ']') +
           ' 「' +
           text +
@@ -901,6 +1054,23 @@ export function makePetUI(rt: {
         () => setWhisperBubbleOn(false),
         duration ?? BUBBLE_DURATION_MS,
       );
+=======
+          ' -> [' +
+          name +
+          '] 「' +
+          text +
+          '」',
+      );
+      stopMove();
+      setWhisperText(text);
+      setWhisperImage(image);
+      setWhisperBubbleOn(true);
+      // 气泡 10s 定时消失（与动画解耦；重复触发先清旧定时器）
+      if (whisperBubbleTimerRef.current !== null) window.clearTimeout(whisperBubbleTimerRef.current);
+      whisperBubbleTimerRef.current = window.setTimeout(() => setWhisperBubbleOn(false), BUBBLE_DURATION_MS);
+      setOnce(true);
+      setAnim(name);
+>>>>>>> yellow-hair
     };
     useEffect(() => {
       const onResize = () => setCustomPos((prev) => (prev ? { ...prev } : prev));
@@ -910,10 +1080,13 @@ export function makePetUI(rt: {
 
     // ---- 动画链：播完按权重选下一个 ----
     const pickNext = () => {
+<<<<<<< HEAD
       // 占用锁（issue #122 第 4 项）：锁生效时**不掷骰**。这里是随机链的**唯一**入口
       // （只有动画播完才会走到），所以一句判断就把随机动画、随机转向、自主走位一起停住——
       // 宠物停在最后一帧，等持锁者的下一条指令（那走 /anim，不经这里）。
       if (frozenRef.current) return;
+=======
+>>>>>>> yellow-hair
       const animations = petAnims;
       const animationWeights = petWeights;
       const roll = Math.random();
@@ -971,12 +1144,15 @@ export function makePetUI(rt: {
     // 互动结束应立即回到对应档位循环动画（打断-恢复语义）；无状态/终态返回 false 不接管，
     // 调用方走原逻辑（回 idle / 随机池）。
     const resumeWorkStatusAnim = (): boolean => {
+<<<<<<< HEAD
       // 占用锁：冻结期间不许由这条路把工作状态动画点回来。它读的是**实时**状态（`workStatusRef`），
       // 跟 `workStatusTick` 无关——持锁者每投一次带 `anim` 的气泡，说话动画播完就会经 handleEnded
       // 走到这里。自防一道，是为了让"冻结期间不恢复档位动画"成为**这个函数自己的契约**，
       // 而不是靠每个调用方都记得先判冻结。解冻路径不受影响：`applyFreeze(false)` 是先把
       // `frozenRef` 置 false 再调这里。
       if (frozenRef.current) return false;
+=======
+>>>>>>> yellow-hair
       const ws = workStatusRef.current;
       if (!ws || !ws.state || ws.state === 'success' || ws.state === 'error') return false;
       const pool = petAnims.events?.workStatus;
@@ -998,6 +1174,7 @@ export function makePetUI(rt: {
       // 只认前台视频触发的 ended：后台（被降级停播）视频即便有残留事件也一律丢弃，防止掐断当前动画
       const evEl = e && (e.currentTarget as HTMLVideoElement | null);
       if (evEl && !evEl.classList.contains('is-front')) return;
+<<<<<<< HEAD
       // 播放回执：前台视频真的播完了 → 如实回 ended。放在拖拽守卫**之前**：
       // "播完了"是既成事实，拖拽守卫管的是动画链怎么推进，不该影响回执的准确性。
       const donePlayback = playingPlaybackRef.current;
@@ -1019,6 +1196,10 @@ export function makePetUI(rt: {
       // 把工作状态动画点回来——只要用户在跑任务，冻结就形同虚设。
       // 播放回执已经在上面上报，不受这一行影响。
       if (frozenRef.current) return;
+=======
+      const animations = petAnims;
+      if (dragRef.current.active) return;
+>>>>>>> yellow-hair
       // 事件动画播完：回 idle（与 drag/clicks 同分支，不进入随机链）；气泡由定时器自动消失，与动画解耦
       const isEvent = isEventAnim(animations.events, animRef.current);
       // 工作状态循环护栏：非终态档位（thinking/working/result/waiting）期间，workStatus 事件动画
@@ -1172,12 +1353,16 @@ export function makePetUI(rt: {
         : actions[Math.floor(Math.random() * actions.length)];
       if (!chosen) return false;
       const mp = Object.assign({}, moves.default, chosen.params || {});
+<<<<<<< HEAD
       // 朝向 → 走路方向：**只看当前 facing**。原式是 `(facingRef.current === 'right') !==
       // petAnims.turn.includes(animRef.current)`，那个 XOR 是用来补"turn 播完 setFacing 异步、
       // 紧随的 pickNext 还读到旧 facing"（见 handleEnded）。1ea84ee 起 handleEnded 已立即同步
       // facingRef，旧朝向不复存在，XOR 反而把方向多翻一次：turn 播完朝右，这里算出 dir=-1，
       // 于是镜像朝右、人往左走。故删掉。
       const dir = facingRef.current === 'right' ? 1 : -1;
+=======
+      const dir = (facingRef.current === 'right') !== petAnims.turn.includes(animRef.current) ? 1 : -1;
+>>>>>>> yellow-hair
       const W = window.innerWidth;
       // 移动距离随宠物缩放：config 的 minDist/maxDist 是基准尺寸（462px 宽）下的 px，
       // 按 实际size/基准 等比缩放 —— 小宠物挪小步、大宠物挪大步，与人物自身大小匹配
@@ -1212,9 +1397,12 @@ export function makePetUI(rt: {
         cancelAnimationFrame(moveRef.current);
         moveRef.current = null;
       }
+<<<<<<< HEAD
       // 位置指令的弹簧也是一种"自主移动"：任何停走路的地方都该把它一并停掉，否则两套运动系统会
       // 同时改 DOM 位置（用户拖拽 / 抛掷 / 事件动画 / 菜单点播都会走到这）。
       stopPosFollow();
+=======
+>>>>>>> yellow-hair
     };
 
     // ---- 拖拽抛掷物理（与桌面 renderer.js 同构；纯计算在 shared/physics.ts）----
@@ -1350,6 +1538,7 @@ export function makePetUI(rt: {
     /** 被撞回调（宠物间碰撞）：被其它飞行中宠物撞到 → 停当前动作，从落点以新初速抛出去（全复用现有物理） */
     const startThrowLatestRef = useRef<(px: number, py: number, vx: number, vy: number) => void>(() => {});
     startThrowLatestRef.current = startThrow;
+<<<<<<< HEAD
 
     // ---- 位置 / 抛掷指令（其他插件经 POST /position、POST /throw 写进 S）----
     // 两条都是**指令**，与上面的 animCue 同族：容器统一轮询后按宠物 id 分发，seq 变化即执行。
@@ -1454,6 +1643,8 @@ export function makePetUI(rt: {
       const box = boxPxRef.current ?? { x: currentCenterX() - halfW, y: currentCenterY() - halfH };
       startThrow(box.x, box.y, vx, vy);
     };
+=======
+>>>>>>> yellow-hair
     const onPetHit = (vx: number, vy: number) => {
       stopMove();
       stopDragFollow();
@@ -1552,6 +1743,7 @@ export function makePetUI(rt: {
       tipEl.style.top = p.y + 'px';
     };
 
+<<<<<<< HEAD
     // ---- 占用锁：冻结 / 解冻（issue #122 第 4 项）----
     //
     // 锁在宿主内存里，渲染端靠 S 的 `pets.<id>.lock` 叶子知道它。**宿主不会到点推一次"锁没了"**
@@ -1625,10 +1817,13 @@ export function makePetUI(rt: {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lockTick, lock]);
 
+=======
+>>>>>>> yellow-hair
     // ---- 点击 vs 拖拽 ----
     const handlePointerDown = (e: ReactNS.PointerEvent<HTMLDivElement>) => {
       // 只认左键：右键进入拖拽判定会与右键菜单打架（右键不拖拽，两端一致）
       if (e.button !== 0) return;
+<<<<<<< HEAD
       // 占用锁（issue #122 第 4 项）：用户**点了或拖了**这只宠物 = 用户接管，立刻撤掉第三方占用。
       // 这是唯一一处"渲染端 → 宿主"的锁上报——宿主看不见鼠标，而锁在它手里（见 /lock/release 的
       // force 形态）。先本地解冻再上报：叶子回来还有一次往返，等它会让宠物"点了半天才动"；
@@ -1641,6 +1836,8 @@ export function makePetUI(rt: {
         applyFreeze(false);
         void postAction('/dsh-pet-7340/lock/release?pet=' + encodeURIComponent(cfg.id), { force: true });
       }
+=======
+>>>>>>> yellow-hair
       // 抓取速度日志：stopThrow 之前读，否则飞行速度就没了；静止时记录 0
       const grabState = throwStateRef.current;
       console.log(
@@ -1855,6 +2052,7 @@ export function makePetUI(rt: {
 
     // ---- 右键菜单（统一自绘组件：树 + 渲染 + 样式与桌面共用 src/shared/menu.ts） ----
     // 注意：菜单是独立浮层，只在宠物命中区拦截右键（preventDefault + stopPropagation），
+<<<<<<< HEAD
     // 绝不进入/改动 DSH 页面自己的菜单。浏览器端工具项 = 查看余额 / 碎碎念 / 对话 / 回到初始位置
     // （无「打开网站」——宠物就在网页里；无「重载配置」——刷新页面即可）。
     /** `keepFacing` = 调用方已**显式指定**朝向（POST /anim 的 facing）：跳过下面"文字类动画
@@ -1881,6 +2079,20 @@ export function makePetUI(rt: {
         postAction('/dsh-pet-7340/whisper?pet=' + encodeURIComponent(cfg.id) + '&surface=web')
           .then((ok: boolean) => {
             if (!ok) console.warn('[dsh-pet] 碎碎念手动触发失败 pet=' + cfg.id);
+=======
+    // 绝不进入/改动 DSH 页面自己的菜单；浏览器端只有「碎碎念 / 回到初始位置 + 动作」——
+    // 无「打开网站 / 查看余额」（打开网站=就在网页里；查看余额已由对话框 /balance 命令实现）。
+    const handleMenuAction = (leaf: MenuLeaf) => {
+      if (leaf.action === 'whisper') {
+        // 手动碎碎念：POST 动作端点让 host 立即新生成一句（写进 S）。
+        // 动作**不回文本**——收到 ok 后叫醒一拍 /state，文本随下一拍到达并弹气泡（0 延迟）。
+        // 手动触发不受 whisperEnabled 限制——该字段只关自动周期，手动永远可用。
+        console.info('[dsh-pet] 菜单触发碎碎念 pet=' + cfg.id);
+        postAction('/dsh-pet-7340/whisper?pet=' + encodeURIComponent(cfg.id))
+          .then((ok: boolean) => {
+            if (!ok) console.warn('[dsh-pet] 碎碎念手动触发失败 pet=' + cfg.id);
+            statePoller.now();
+>>>>>>> yellow-hair
           })
           .catch((e: unknown) => console.warn('[dsh-pet] 碎碎念手动触发异常', e));
         return;
@@ -1896,12 +2108,21 @@ export function makePetUI(rt: {
         chatRef.current = mountChatDialog({
           petId: cfg.id,
           baseUrl: '/dsh-pet-7340/chat',
+<<<<<<< HEAD
           surface: 'web',
           x: hitRect ? hitRect.right + 6 : window.innerWidth - 256,
           y: hitRect ? hitRect.top + 6 : 8,
           onSent: () => {
             // 发送成功：回复已写进 S → 版本号变 → 挂着的长轮询立刻返回并弹气泡（0 延迟）
             console.info('[dsh-pet] 对话已发送 pet=' + cfg.id);
+=======
+          x: hitRect ? hitRect.right + 6 : window.innerWidth - 256,
+          y: hitRect ? hitRect.top + 6 : 8,
+          onSent: () => {
+            // 发送成功：回复已写进 S，叫醒一拍 /state 让气泡 0 延迟出现（不必等下一个 1s）
+            console.info('[dsh-pet] 对话已发送 pet=' + cfg.id);
+            statePoller.now();
+>>>>>>> yellow-hair
           },
           onClose: () => {
             chatRef.current = null;
@@ -1922,6 +2143,7 @@ export function makePetUI(rt: {
         })
           .then(async (r) => {
             if (!r.ok) throw new Error('pet-display HTTP ' + r.status);
+<<<<<<< HEAD
             const body = (await r.json()) as Record<string, unknown>;
             // 业务失败是 **HTTP 200 + `{ok:false, reason}`**（缺 id / display 非法 / 宠物不存在 /
             // 写盘失败全走这一条）——只看状态码会把失败体当成成品聚合喂给 reload。
@@ -1930,6 +2152,12 @@ export function makePetUI(rt: {
             // **必须传它**：不传参时 reload 会再拉一次 GET /config，那次请求可能拿回陈旧配置，
             // 现场表现就是"浏览器端要刷新才生效"。
             petBridge.reload(body as Record<string, Record<string, unknown>>);
+=======
+            // 响应体就是改动后的成品聚合（与设置页保存同路），直接交给 reload。
+            // **必须传它**：不传参时 reload 会再拉一次 GET /config，那次请求可能拿回陈旧配置，
+            // 现场表现就是"浏览器端要刷新才生效"。
+            petBridge.reload((await r.json()) as Record<string, Record<string, unknown>>);
+>>>>>>> yellow-hair
           })
           .catch((e: unknown) => console.warn('[dsh-pet] 显示位置切换失败', e));
         return;
@@ -1942,12 +2170,17 @@ export function makePetUI(rt: {
         return;
       }
       if (!leaf.anim) return;
+<<<<<<< HEAD
       // 回执归属：这一段动画若来自第三方点播，编号要跟着这次换源一起下发（自播动画传 null，
       // 顺带把上一次的编号清掉，避免陈旧编号串到自播动画上）
       const cuePlaybackId = playbackId ?? null;
       // 文字类（noMirror）朝右站姿是镜像的：点播前强制朝左，避免文字镜像（与随机链"朝右不选文字"同语义）。
       // `keepFacing` 时跳过：调用方已显式指定朝向，显式值优先（要 right 就给 right，哪怕文字会镜像）。
       if (!keepFacing && isNoMirrorAnimation(petAnims.categories, leaf.anim) && facingRef.current === 'right') {
+=======
+      // 文字类（noMirror）朝右站姿是镜像的：点播前强制朝左，避免文字镜像（与随机链"朝右不选文字"同语义）
+      if (isNoMirrorAnimation(petAnims.categories, leaf.anim) && facingRef.current === 'right') {
+>>>>>>> yellow-hair
         setFacing('left');
       }
       // 点播移动动画：走真实移动（与随机移动同一套：边界检查 / 随机距离 / leadSec·tailSec 时段 / dir 计算），
@@ -1957,17 +2190,21 @@ export function makePetUI(rt: {
           stopMove();
           setOnce(true);
           setAnim(leaf.anim);
+<<<<<<< HEAD
           setCuePlayback(cuePlaybackId);
         } else if (cuePlaybackId !== null) {
           // 移动系统接管：这条路径**不换视频源**（宠物走真实位移），本段点播不会真的播起来。
           // 如实回 failed/busy，而不是让调用方干等到 timeout。
           reportPlayback(cuePlaybackId, 'failed', 'busy');
+=======
+>>>>>>> yellow-hair
         }
         return;
       }
       stopMove();
       setOnce(true);
       setAnim(leaf.anim);
+<<<<<<< HEAD
       setCuePlayback(cuePlaybackId);
     };
     const handleContextMenu = (e: ReactNS.MouseEvent<HTMLDivElement>) => {
@@ -1976,6 +2213,13 @@ export function makePetUI(rt: {
       //（该开关只关自动轮询与档位动画），与碎碎念「手动触发不受 whisperEnabled 限制」同一条原则。
       const tree: MenuNode[] = [
         { label: '查看余额', action: 'show-balance' },
+=======
+    };
+    const handleContextMenu = (e: ReactNS.MouseEvent<HTMLDivElement>) => {
+      // 工具项（碎碎念——手动触发**不受 whisperEnabled 限制**，该字段只影响自动周期轮询；
+      // 回到初始位置，两端共用）+ 动作树（动作→分类→具体动画）
+      const tree: MenuNode[] = [
+>>>>>>> yellow-hair
         { label: '碎碎念', action: 'whisper' },
         { label: '对话', action: 'chat' },
         { label: '回到初始位置', action: 'home' },
@@ -2034,17 +2278,28 @@ export function makePetUI(rt: {
         return h(WhisperBubble, { text: workText, on: workBubbleOn });
       }
       if (whisperBubbleOn && whisperText) {
+<<<<<<< HEAD
         // assetRoot：配图**按名称**取时去哪个表情包目录链取（种类独占 → 用户目录 → 包内），
         // 与动画素材同一套归属；配图走 url 形态时不用它（直接用那个地址）
         return h(WhisperBubble, {
           text: whisperText,
           image: whisperImage,
           url: whisperUrl,
+=======
+        // assetRoot：配图去哪个表情包目录链取（种类独占 → 用户目录 → 包内），与动画素材同一套归属
+        return h(WhisperBubble, {
+          text: whisperText,
+          image: whisperImage,
+>>>>>>> yellow-hair
           assetRoot: cfg.assetRoot,
           on: whisperBubbleOn,
         });
       }
+<<<<<<< HEAD
       if (bubbleOn && balance && (cfg.balanceEnabled || balanceManual)) {
+=======
+      if (bubbleOn && balance && cfg.balanceEnabled) {
+>>>>>>> yellow-hair
         return h(BalanceBubble, { state: balance, on: bubbleOn });
       }
       if (workBubbleOn && workText && cfg.workStatusEnabled) {
@@ -2081,6 +2336,7 @@ export function makePetUI(rt: {
       'data-corner': corner,
       'data-facing': facing,
       style: Object.assign(
+<<<<<<< HEAD
         {
           '--dsh-pet-size': size + 'px',
           '--dsh-pet-mx': margin.x + 'px',
@@ -2090,6 +2346,9 @@ export function makePetUI(rt: {
           '--dsh-pet-font-bubble': fontPx.bubble + 'px',
           '--dsh-pet-font-tip': fontPx.tip + 'px',
         },
+=======
+        { '--dsh-pet-size': size + 'px', '--dsh-pet-mx': margin.x + 'px', '--dsh-pet-my': margin.y + 'px' },
+>>>>>>> yellow-hair
         rootStyle,
       ),
       children: [
@@ -2134,9 +2393,12 @@ export function makePetUI(rt: {
     const [balance, setBalance] = useState<BalanceState | null>(null);
     const [balanceTick, setBalanceTick] = useState(0);
     const [balanceNoticeTick, setBalanceNoticeTick] = useState(0);
+<<<<<<< HEAD
     // 这次余额是不是**用户手动要的**（host 在叶子里标 manual）：下发给各宠物，
     // 决定「关了 balanceEnabled 的宠物要不要也答复」——手动请求无条件弹，开关只关自动。
     const [balanceManual, setBalanceManual] = useState(false);
+=======
+>>>>>>> yellow-hair
     // 上次已提示的不可用原因（reason:provider）：自动轮询只在原因变化时再弹（判定在 src/shared，两端同一份）
     const noticeKeyRef = useRef<string | null>(null);
     // 余额结果 → 状态与气泡（周期刷新与手动触发**共用这一条路径**，避免各写一份后漂移）。
@@ -2146,7 +2408,10 @@ export function makePetUI(rt: {
     const applyBalanceRef = useRef<(state: BalanceState, explicit: boolean) => void>(() => {});
     applyBalanceRef.current = (state, explicit) => {
       setBalance(state);
+<<<<<<< HEAD
       setBalanceManual(explicit); // 手动标记随本次数据一起下发（每次到达都覆盖，人工标记不会滞留）
+=======
+>>>>>>> yellow-hair
       if (state.ok) {
         setBalanceTick((t) => t + 1); // 成功：播档位动画 + 弹余额气泡
         return;
@@ -2165,6 +2430,7 @@ export function makePetUI(rt: {
     // 说话（碎碎念 / 命令气泡 / 对话回复三合一）：容器统一轮询 /state 的 pets.<id>.say，
     // 按宠物分发到对应 PetCard（sayRef + sayTick；见下方统一轮询与 PetCard 的 say 分支）。
 
+<<<<<<< HEAD
     // 字体族（全局配置 font.family）→ documentElement 上的全局变量：对话窗与得分弹窗挂在 body 下、
     // 继承不到宠物根容器，只能走全局；气泡与悬浮提示也一并从这里继承。
     // 多只宠物的 font 同值（配置只有一份），重复设置无副作用；列表为空（配置尚未加载）时不动。
@@ -2174,6 +2440,8 @@ export function makePetUI(rt: {
       document.documentElement.style.setProperty('--dsh-pet-font-family', fontStackOf(family));
     }, [pets]);
 
+=======
+>>>>>>> yellow-hair
     useEffect(() => {
       let alive = true;
       /** 唯一填充点：host 成品聚合 → 渲染列表。初始加载与设置页保存/同步后重载都走这里——
@@ -2238,6 +2506,7 @@ export function makePetUI(rt: {
     // 为什么不再按"有没有启用某功能"决定要不要轮询：说话（命令触发）与宠物开关无关，
     // 今天每只宠物的 /broadcast 轮询本来就不受开关门控——统一后至少不比现在多。
     const [sayTick, setSayTick] = useState(0);
+<<<<<<< HEAD
     const sayRef = useRef<Record<string, SayCue & { seq: number }>>({});
     const [animCueTick, setAnimCueTick] = useState(0);
     const animCueRef = useRef<
@@ -2254,10 +2523,16 @@ export function makePetUI(rt: {
     // 忽略自动来源），并自己按 expiresAt 定时解除——宿主不会到点推一次"锁没了"。
     const [lockTick, setLockTick] = useState(0);
     const lockRef = useRef<Record<string, LockState>>({});
+=======
+    const sayRef = useRef<Record<string, { text: string; image?: string; seq: number }>>({});
+    const [animCueTick, setAnimCueTick] = useState(0);
+    const animCueRef = useRef<Record<string, { name: string; seq: number }>>({});
+>>>>>>> yellow-hair
     useEffect(() => {
       if (!ready) return;
       let alive = true;
       let baseline: Record<string, number> | null = null;
+<<<<<<< HEAD
       // 长轮询：since = 我手里这份 S 的版本号（undefined = 首拉，不带参数 → 立刻拿全量）
       let since: number | undefined;
       // 宿主支持长轮询吗？响应带 counter = 支持；不带 = **老宿主**——它不认识 since/timeout，
@@ -2370,6 +2645,72 @@ export function makePetUI(rt: {
       void loop();
       return () => {
         alive = false;
+=======
+      // 配置版本基线：与叶子同一套约定——首拉只记基线，之后与上一拍不同才动作
+      let configBaseline: string | undefined;
+      const poll = async () => {
+        try {
+          const s = await fetchState();
+          if (!alive || !s) return;
+          // 配置被别处改过（桌面端右键改 display / 另一个标签页保存 / 用户手改配置文件）→ 重拉配置重拍平。
+          // 这是「桌面端改了、浏览器端要刷新才可见」的解药：宿主把配置 mtime 挂在 /state 上，1s 内自动跟随。
+          if (configBaseline === undefined) {
+            configBaseline = s.configVersion;
+          } else if (s.configVersion !== undefined && s.configVersion !== configBaseline) {
+            configBaseline = s.configVersion;
+            petBridge.reload(); // 内部 GET /config（该响应已带 no-cache）→ applyMerged → visiblePets 重算
+          }
+          if (baseline === null) {
+            baseline = flattenCounters(s); // 首拉：只记基线，不渲染
+            return;
+          }
+          for (const { path, leaf } of takeChanged(s, baseline)) {
+            if (leaf.data === null) continue;
+            if (path === 'sections.balance') {
+              const hit = readBalance(leaf);
+              if (hit) applyBalanceRef.current(hit.state, hit.manual);
+            } else if (path === 'sections.workStatus') {
+              const snap = readWorkStatus(leaf);
+              if (snap) {
+                setWorkStatus(snap);
+                setWorkStatusTick((t) => t + 1); // 任何变化都触发（含回到空闲：用于收起常驻气泡）
+              }
+            } else if (path === 'sections.notify') {
+              // 系统通知（单槽：同一秒多条只留最后一条，由 host 决定）→ 弹 toast（内部有开关/聚焦/权限门）
+              notifyFromFrame(leaf.data);
+            } else if (path.startsWith('pets.') && path.endsWith('.say')) {
+              // 说话叶子：路径形如 pets.<id>.say。宠物 id **允许含点号**，所以按前缀/后缀切片，
+              // 绝不 split('.')（那会把 id 切碎、派发给不存在的宠物）。
+              const petId = path.slice('pets.'.length, -'.say'.length);
+              const said = readSay(leaf);
+              if (said) {
+                sayRef.current[petId] = { ...said, seq: (sayRef.current[petId]?.seq ?? 0) + 1 };
+                setSayTick((t) => t + 1);
+              }
+            } else if (path.startsWith('pets.') && path.endsWith('.anim')) {
+              // 点播动画叶子：路径形如 pets.<id>.anim。同样按前缀/后缀切片，绝不 split('.')。
+              // 每次写入 counter 都递增，所以同一个动画连点两次也会分发两次（重播）。
+              const petId = path.slice('pets.'.length, -'.anim'.length);
+              const hit = readAnim(leaf);
+              if (hit) {
+                animCueRef.current[petId] = { name: hit.name, seq: (animCueRef.current[petId]?.seq ?? 0) + 1 };
+                setAnimCueTick((t) => t + 1);
+              }
+            }
+          }
+        } catch {
+          /* 轻量轮询失败静默：下一拍再试 */
+        }
+      };
+      // 前端动作（右键菜单/对话弹窗）完成后叫醒一拍：数据只从 S 来，但结果可以 0 延迟可见
+      statePoller.now = () => void poll();
+      void poll();
+      const timer = window.setInterval(() => void poll(), 1000);
+      return () => {
+        alive = false;
+        statePoller.now = () => {};
+        window.clearInterval(timer);
+>>>>>>> yellow-hair
       };
     }, [ready]);
 
@@ -2381,19 +2722,25 @@ export function makePetUI(rt: {
             balance,
             balanceTick,
             balanceNoticeTick,
+<<<<<<< HEAD
             balanceManual,
+=======
+>>>>>>> yellow-hair
             workStatus,
             workStatusTick,
             say: sayRef.current[p.id],
             sayTick,
             animCue: animCueRef.current[p.id],
             animCueTick,
+<<<<<<< HEAD
             posCue: posCueRef.current[p.id],
             posCueTick,
             throwCue: throwCueRef.current[p.id],
             throwCueTick,
             lock: lockRef.current[p.id],
             lockTick,
+=======
+>>>>>>> yellow-hair
             arena: arenaRef,
           }),
         )

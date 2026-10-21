@@ -12,10 +12,16 @@
  * 样式对齐官方设置页：max-width 720px、全走 --dsw-alias-* 语义 token（主题跟随）。
  */
 import { PET_DISPLAYS } from '../shared/config';
+<<<<<<< HEAD
 import { DEFAULT_FONT, FONT_PRESETS, FONT_SIZE_MAX, FONT_SIZE_MIN } from '../shared/fonts';
 import { DEFAULT_PHYSICS } from '../shared/physics';
 import { NOTIFY_ICONS, reloadNotifications, requestNotificationPermission, wireNotificationClick } from './notify';
 import type { Corner, FontConfig, FontFamilyId, ModelSelection, Pet, PetDisplay, PhysicsParams } from '../shared/types';
+=======
+import { DEFAULT_PHYSICS } from '../shared/physics';
+import { NOTIFY_ICONS, reloadNotifications, requestNotificationPermission } from './notify';
+import type { Corner, ModelSelection, Pet, PetDisplay, PhysicsParams } from '../shared/types';
+>>>>>>> yellow-hair
 import type { ChangeEvent, Dispatch, FunctionComponent, SetStateAction } from 'react';
 import type * as ReactNS from 'react';
 import type { jsx } from 'react/jsx-runtime';
@@ -121,6 +127,7 @@ const SETTINGS_CSS = [
   '.dsh-pet-cfg__toggle>label>span{overflow-wrap:anywhere}',
   '.dsh-pet-cfg__toggle input[type=checkbox]{flex:none;width:16px;height:16px;margin:0;accent-color:var(--dsw-alias-state-business-primary);cursor:pointer}',
 
+<<<<<<< HEAD
   // 悬浮说明（通用件）：任何带 data-tip 的元素悬浮即出气泡——问号与保存按钮共用这一套。
   // 组件侧用 tip() 生成属性（见 makePetConfigSection），不要为它包一层 DOM。
   '.dsh-pet-cfg [data-tip]{position:relative}',
@@ -135,6 +142,18 @@ const SETTINGS_CSS = [
 
   // 问号：气泡的一个宿主外观（圆形 ?），说明机制本身来自上面的通用规则
   '.dsh-pet-cfg__q{display:inline-flex;align-items:center;justify-content:center;flex:none;width:14px;height:14px;border:1px solid var(--dsw-alias-label-tertiary);border-radius:50%;color:var(--dsw-alias-label-tertiary);font-size:10px;font-style:normal;line-height:1;cursor:help;user-select:none}',
+=======
+  // 问号 + 悬浮说明：解释小字全部收进这里（data-tip → ::after）
+  '.dsh-pet-cfg__q{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;width:14px;height:14px;border:1px solid var(--dsw-alias-label-tertiary);border-radius:50%;color:var(--dsw-alias-label-tertiary);font-size:10px;font-style:normal;line-height:1;cursor:help;user-select:none}',
+  // 气泡默认**左对齐**到问号（left:-4px），而不是居中。
+  // 为什么不能居中：问号常常贴着卡片左缘（卡片头、栅格第一列、页标题），居中会让气泡
+  // 往左伸出一大截，被设置页的滚动容器（overflow 会连带裁掉横向）切掉——看起来就是
+  // 「气泡左边被左边框遮住」。左对齐则一律向右展开，左侧永不出界。
+  '.dsh-pet-cfg__q::after{display:none;content:attr(data-tip);position:absolute;left:-4px;bottom:calc(100% + 8px);width:max-content;max-width:260px;padding:6px 10px;border-radius:8px;background:var(--dsw-alias-tooltip-bg);color:#fff;font-size:12px;font-style:normal;font-weight:400;line-height:18px;text-align:left;white-space:normal;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s ease;box-shadow:0 6px 20px rgba(0,0,0,.22);z-index:2147483000}',
+  '.dsh-pet-cfg__q:hover::after{display:block;opacity:1;visibility:visible}',
+  // 最右一列：改为右对齐，避免气泡顶出设置页右缘
+  '.dsh-pet-cfg__q.is-end::after{left:auto;right:-4px}',
+>>>>>>> yellow-hair
 
   // 按钮
   '.dsh-pet-cfg__btn{border:1px solid var(--dsw-alias-border-l2);background:transparent;color:var(--dsw-alias-label-primary);border-radius:8px;padding:4px 14px;font:inherit;font-size:12px;line-height:20px;cursor:pointer;white-space:nowrap}',
@@ -241,7 +260,10 @@ export const zh = {
   marginX: '水平偏移',
   marginY: '垂直偏移',
   save: '保存',
+<<<<<<< HEAD
   saveHotkey: 'Ctrl+S / Cmd+S',
+=======
+>>>>>>> yellow-hair
   sync: '同步',
   confirmSync: '确定同步吗？将用项目内置的默认配置（完整字段 + 注释）覆盖用户配置，当前的自定义内容会丢失。',
   corruptTitle: '用户配置已损坏，未保存',
@@ -273,9 +295,15 @@ export const zh = {
   chatImageToggle: '对话配图',
   chatImageToggleHint:
     '对话时由 AI 按当前语境从表情包池挑一张配图（可不挑；图片映射在配置文件顶层 memes）。token：每条消息都要把整张清单附进请求，当前约 1.1k 字符（≈650 token，约碎碎念配图的 11 倍），并随图片数量线性增长；关掉则一个字符都不附。',
+<<<<<<< HEAD
   confineToggle: '锁定在当前屏幕',
   confineToggleHint:
     '多屏用户：开了之后宠物只在当前所在那块屏幕内活动——甩出去的宠物只在松手时所在那块屏内弹（屏缝当墙，不飞到隔壁屏），自主漫游也只在当前所在那块屏内走（越出屏缝的那一步直接取消）。关掉则照常跨屏飞行 / 跨屏行走。只影响桌面模式——浏览器 overlay 本来就只在视口内活动。',
+=======
+  confineToggle: '抛掷锁定在当前屏幕',
+  confineToggleHint:
+    '多屏用户：甩出去的宠物只在松手时所在那块屏幕内弹（屏缝当墙，不飞到隔壁屏）；关掉则照常跨屏飞行。只影响桌面模式——浏览器 overlay 本来就只在视口内弹。',
+>>>>>>> yellow-hair
   physicsTitle: '物理（拖拽抛掷手感）',
   physicsHint:
     '全局默认，所有宠物共用（pet pack 可在自己种类文件里单独覆盖）；随「保存」写入用户配置（不做即时写入）。浏览器保存后即时生效，桌面端由保存重载宠物窗口后生效。',
@@ -292,6 +320,7 @@ export const zh = {
   physicsPetCollision: '宠物互撞 petCollision',
   physicsPetCollisionHint: '飞行中的宠物撞到别的宠物按动量守恒弹开（质量 ∝ 尺寸²）',
   invalidPhysics: '请检查物理参数：重力 / 地面摩擦 ≥ 0，弹性 0~1，总力度 > 0。',
+<<<<<<< HEAD
   fontTitle: '外观与字体',
   fontHint:
     '字体种类作用于现在用软糖体的全部文字：宠物气泡、悬浮提示、对话窗、得分弹窗；字号只作用于宠物气泡与悬浮提示（对话窗与得分弹窗的字号不变）。全局默认，所有宠物共用（pet pack 可在自己种类文件里单独覆盖）；随「保存」写入用户配置，浏览器保存后即时生效，桌面端由保存重载宠物窗口后生效。',
@@ -311,6 +340,8 @@ export const zh = {
   'font.simsun': '宋体',
   'font.comic': '漫画体',
   'font.system': '系统默认',
+=======
+>>>>>>> yellow-hair
   modelTitle: 'AI 模型与对话上下文',
   modelHint:
     '碎碎念与对话各自用哪个模型，以及对话每次带多少历史进上下文。选「跟随当前对话」= 用你当前对话正在用的那个模型（默认）。全局默认：对所有宠物生效，pet pack 可在自己种类文件里单独覆盖。选项与 DSH 的模型选择器同源，由宿主实时提供。',
@@ -415,7 +446,10 @@ export const en = {
   marginX: 'Horizontal offset',
   marginY: 'Vertical offset',
   save: 'Save',
+<<<<<<< HEAD
   saveHotkey: 'Ctrl+S / Cmd+S',
+=======
+>>>>>>> yellow-hair
   sync: 'Sync',
   confirmSync:
     'Sync? This overwrites the user config with the bundled default config (all fields + comments); current customizations are lost.',
@@ -449,9 +483,15 @@ export const en = {
   chatImageToggle: 'Chat images',
   chatImageToggleHint:
     'Let the AI pick one meme from the pool that fits the current context (optional; mapping lives in the top-level `memes` config field). Tokens: every message carries the whole catalog — currently ~1.1k chars (~650 tokens, about 11x the whisper case) and growing with the number of images; turning this off appends nothing at all.',
+<<<<<<< HEAD
   confineToggle: 'Lock to the current screen',
   confineToggleHint:
     'Multi-monitor: when on, the pet stays inside the screen it is currently on — a thrown pet bounces only inside the screen it was released on (screen seams act as walls, so it never flies to the neighbouring monitor), and autonomous wandering only walks within the screen it is currently on (a step that would cross the seam is simply cancelled). Turn this off to let it cross screens as usual. Desktop only — the browser overlay always stays inside the viewport anyway.',
+=======
+  confineToggle: 'Lock throws to the current screen',
+  confineToggleHint:
+    'Multi-monitor: a thrown pet bounces only inside the screen it was released on (screen seams act as walls, so it never flies to the neighbouring monitor); turn this off to let it cross screens as usual. Desktop only — the browser overlay always bounces inside the viewport anyway.',
+>>>>>>> yellow-hair
   physicsTitle: 'Physics (drag & throw feel)',
   physicsHint:
     'Global default, shared by every pet (a pet pack may override it in its own kind file); written to the user config on "Save" (never written immediately). Applies instantly in the browser; on the desktop it applies once Save reloads the pet windows.',
@@ -471,6 +511,7 @@ export const en = {
   physicsPetCollision: 'Pet collisions',
   physicsPetCollisionHint: 'A flying pet bounces off the others with momentum conservation (mass ∝ size²)',
   invalidPhysics: 'Check the physics values: gravity / ground friction ≥ 0, bounciness 0–1, throw power > 0.',
+<<<<<<< HEAD
   fontTitle: 'Appearance & font',
   fontHint:
     'The family applies to every place that currently uses the candy font: pet bubble, hover tooltip, chat popup, score popup. The size applies only to the pet bubble and the hover tooltip (chat and score popups keep their own size). Global default, shared by every pet (a pet pack may override it in its own kind file); written to the user config on "Save" — instant in the browser, and on the desktop it applies once Save reloads the pet windows.',
@@ -492,6 +533,8 @@ export const en = {
   'font.simsun': 'SimSun',
   'font.comic': 'Comic Sans MS',
   'font.system': 'System default',
+=======
+>>>>>>> yellow-hair
   modelTitle: 'AI models & chat context',
   modelHint:
     'Which model each of whisper and chat uses, and how much history every chat request carries. "Follow current conversation" uses the model your current conversation is on (default). Global default: applies to every pet, and a pet pack may override it in its own kind file. The options come from the same source as the DSH model picker, served live by the host.',
@@ -599,6 +642,7 @@ export function makePetConfigSection(rt: {
   };
 
   /**
+<<<<<<< HEAD
    * 悬浮说明（通用件，本页所有解释小字的唯一去处）：返回**展开到任意元素上**的属性，
    * 带了它就悬浮出气泡（CSS 的 `[data-tip]::after`）。问号与保存按钮共用这一套。
    *
@@ -623,6 +667,23 @@ export function makePetConfigSection(rt: {
       className: 'dsh-pet-cfg__q',
       ...tip(text, end),
       'aria-label': text,
+=======
+   * 问号 + 悬浮说明（本页所有解释小字的唯一去处）。
+   *
+   * 为什么用 `<i>` 而不是 `<button>`：它只是说明入口，点了不该有任何行为，也不该被
+   * Tab 当成操作项；真正的可交互入口是它旁边的输入框 / 开关。说明文字走 `data-tip`
+   * 属性，由 SETTINGS_CSS 的 `::after{content:attr(data-tip)}` 画成气泡——CSS 才能
+   * 表达 hover / 过渡，行内样式做不到。
+   *
+   * @param tip 说明正文（已翻译）
+   * @param end 是否右对齐气泡（给栅格最右一列用，免得气泡顶出设置页）
+   */
+  const q = (tip: string, end = false): ReturnType<typeof h> =>
+    h('i', {
+      className: 'dsh-pet-cfg__q' + (end ? ' is-end' : ''),
+      'data-tip': tip,
+      'aria-label': tip,
+>>>>>>> yellow-hair
       role: 'img',
       children: '?',
     });
@@ -963,8 +1024,11 @@ export function makePetConfigSection(rt: {
     const [loadAttempt, setLoadAttempt] = useState(0);
     const busy = saving || loadState !== 'ready';
     const [msg, setMsg] = useState<{ kind: 'ok' | 'err' | ''; text: string }>({ kind: '', text: '' });
+<<<<<<< HEAD
     // 设置页根节点：Ctrl+S 只在它可见时接管（DSH 若在别的设置页保持本组件挂载，不能把别人的快捷键抢走）
     const rootRef = useRef<HTMLElement | null>(null);
+=======
+>>>>>>> yellow-hair
     // 确认/提示弹窗（仿官方弹窗：遮罩 + 居中卡片 + 按钮）：
     //   remove  —— 删除宠物（双按钮：取消 / 删除）
     //   lastOne —— 只剩一只、删不了：同样走弹窗（单按钮「知道了」）。
@@ -1009,10 +1073,13 @@ export function makePetConfigSection(rt: {
     // 与四个开关同一套语义：只改本地状态，随「保存」整包写入（不做即时写入）。
     // 初值仅作占位；成品配置加载成功后才允许编辑和保存。
     const [physics, setPhysics] = useState<PhysicsParams>({ ...DEFAULT_PHYSICS });
+<<<<<<< HEAD
     // 字体（全局默认：字体种类 / 字号 / 是否随宠物大小缩放，写用户级配置的 font 段）。
     // 与四个全局开关 / physics 同一套语义：只改本地状态，随「保存」整包写入（不做即时写入）。
     // 初值仅作占位；成品配置加载成功后才允许编辑和保存。
     const [font, setFont] = useState<FontConfig>({ ...DEFAULT_FONT });
+=======
+>>>>>>> yellow-hair
     // AI 模型（条目级：碎碎念 / 对话各自的服务商 + 模型，两者都留空 = 跟随当前对话的模型）。
     // 与四个全局开关同一套语义：只改本地状态，随「保存」整包写入（不做即时写入）。
     const [whisperModel, setWhisperModel] = useState<ModelSelection>({ provider: '', model: '' });
@@ -1046,10 +1113,13 @@ export function makePetConfigSection(rt: {
       if (m.physics && typeof m.physics === 'object') {
         setPhysics({ ...DEFAULT_PHYSICS, ...(m.physics as PhysicsParams) });
       }
+<<<<<<< HEAD
       // 字体段：同 physics——成品已填满，缺子键再用默认兜底一次
       if (m.font && typeof m.font === 'object') {
         setFont({ ...DEFAULT_FONT, ...(m.font as FontConfig) });
       }
+=======
+>>>>>>> yellow-hair
       // 模型选择：成品同样已填满（内置默认 = 两者都空 = 跟随当前对话），读得出就原样上屏
       const wm = m.whisperModel as Partial<ModelSelection> | undefined;
       if (wm && typeof wm.provider === 'string' && typeof wm.model === 'string') {
@@ -1140,10 +1210,14 @@ export function makePetConfigSection(rt: {
       }
       try {
         // 成功即发一条测试通知验证链路（绕过聚焦门，直接确认）
+<<<<<<< HEAD
         // 点击行为与真实事件通知共用 wireNotificationClick（否则测出来的链路和线上不是一条）
         wireNotificationClick(
           new Notification('测试通知', { body: '【dsh-pet】系统通知已就绪。', icon: NOTIFY_ICONS.test }),
         );
+=======
+        new Notification('测试通知', { body: '【dsh-pet】系统通知已就绪。', icon: NOTIFY_ICONS.test });
+>>>>>>> yellow-hair
       } catch {
         /* 个别环境构造失败：仍按已授权提示 */
       }
@@ -1205,6 +1279,7 @@ export function makePetConfigSection(rt: {
         setMsg({ kind: 'err', text: t('invalidChatImageLimit') });
         return false;
       }
+<<<<<<< HEAD
       // 字体：与宿主 fontValid 同一套规则（family 必须在预设白名单内、size 4~200、followPet 为布尔）
       if (
         !FONT_PRESETS.some((p) => p.id === font.family) ||
@@ -1215,6 +1290,8 @@ export function makePetConfigSection(rt: {
         setMsg({ kind: 'err', text: t('invalidFont') });
         return false;
       }
+=======
+>>>>>>> yellow-hair
       return true;
     };
 
@@ -1246,9 +1323,12 @@ export function makePetConfigSection(rt: {
           chatMemoryRounds: chatMemory,
           // 对话配图张数上限（同上；0 = 不限制）
           chatImageLimit: chatImageLimit,
+<<<<<<< HEAD
           // 字体（全局默认白名单字段）：宿主用 fontValid 整段校验（family 白名单 / size 4~200 /
           // followPet 布尔）；传了就整段写进用户层，没传则透传保留磁盘旧值
           font: font,
+=======
+>>>>>>> yellow-hair
         };
         // force === true（用户在损坏弹窗里点了确认）：带 ?force=1 才允许按白名单重建损坏文件
         const res = await fetch('/dsh-pet-7340/config' + (force === true ? '?force=1' : ''), {
@@ -1279,6 +1359,7 @@ export function makePetConfigSection(rt: {
       }
     };
 
+<<<<<<< HEAD
     // 快捷键要用**最新**的 save：save 每次渲染都重建（闭包捕获 pets / physics 等状态），
     // 直接塞进 useEffect([]) 会拿着旧状态去存盘。这里转发一次，与 pet.ts 的 startThrowLatestRef 同一手法。
     const saveRef = useRef<() => void>(() => {});
@@ -1302,6 +1383,8 @@ export function makePetConfigSection(rt: {
       return () => document.removeEventListener('keydown', onKey);
     }, []);
 
+=======
+>>>>>>> yellow-hair
     const sync = () => setDialog({ kind: 'sync' });
 
     const doSync = async () => {
@@ -1432,7 +1515,10 @@ export function makePetConfigSection(rt: {
     };
 
     return h('section', {
+<<<<<<< HEAD
       ref: rootRef,
+=======
+>>>>>>> yellow-hair
       className: 'dsh-pet-cfg',
       style: { maxWidth: '720px' },
       children: [
@@ -1501,6 +1587,7 @@ export function makePetConfigSection(rt: {
                   children: [
                     h('span', { key: 't', className: 'dsh-pet-cfg__cardTitle', children: t('petCardTitle') }),
                     q(t('petCardHint')),
+<<<<<<< HEAD
                     // 右侧动作组：就近保存 + 删除。auto margin 挂在这层 wrapper 上，
                     // 这样保存结果（msg）出现/消失时按钮位置不会跳。
                     h('div', {
@@ -1535,6 +1622,16 @@ export function makePetConfigSection(rt: {
                           children: t('remove'),
                         }),
                       ],
+=======
+                    h('button', {
+                      key: 'rm',
+                      type: 'button',
+                      onClick: removeSel,
+                      disabled: busy,
+                      className: 'dsh-pet-cfg__btn is-danger is-sm',
+                      style: { marginLeft: 'auto' },
+                      children: t('remove'),
+>>>>>>> yellow-hair
                     }),
                   ],
                 }),
@@ -1617,9 +1714,14 @@ export function makePetConfigSection(rt: {
                 }),
 
                 h('div', {
+<<<<<<< HEAD
                   className: 'dsh-pet-cfg__grid4',
                   children: [
                     toggleCell('balanceEnabled', !!cur.balanceEnabled, busy, (v) => updateSel({ balanceEnabled: v })),
+=======
+                  className: 'dsh-pet-cfg__grid3',
+                  children: [
+>>>>>>> yellow-hair
                     toggleCell('whisperEnabled', !!cur.whisperEnabled, busy, (v) => updateSel({ whisperEnabled: v })),
                     toggleCell('workStatusEnabled', !!cur.workStatusEnabled, busy, (v) =>
                       updateSel({ workStatusEnabled: v }),
@@ -1655,6 +1757,7 @@ export function makePetConfigSection(rt: {
           ],
         }),
 
+<<<<<<< HEAD
         // 外观与字体卡：字体种类 + 字号 + 是否随宠物缩放（全局默认，与全局开关 / physics 同语义——
         // 只改本地状态，随「保存」整包写入用户配置；不做即时写入）。
         // 字体种类的作用范围 = 现在用软糖体的全部地方（气泡 / 悬浮提示 / 对话窗 / 得分弹窗）；
@@ -1707,6 +1810,8 @@ export function makePetConfigSection(rt: {
           ],
         }),
 
+=======
+>>>>>>> yellow-hair
         // AI 模型与对话上下文卡（需求 5）：碎碎念 / 对话各自的服务商 + 模型，条目级——与四个开关
         // 同一套语义，只改本地状态、随「保存」整包写入。host 侧生成时优先用它，失败自动回落。
         // 第二行是对话历史条数（全局默认）：与两个模型同属「对话的上下文 / token 成本」，
@@ -1782,8 +1887,11 @@ export function makePetConfigSection(rt: {
               disabled: busy,
               onClick: () => void save(),
               className: 'dsh-pet-cfg__btn is-primary',
+<<<<<<< HEAD
               // 悬浮按钮即出气泡，内容就是两个键（不写多余说明）
               ...tip(t('saveHotkey')),
+=======
+>>>>>>> yellow-hair
               children: t('save'),
             }),
             h('button', {

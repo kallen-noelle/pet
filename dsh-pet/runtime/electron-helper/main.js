@@ -45,7 +45,11 @@ try {
   );
   process.exit(3);
 }
+<<<<<<< HEAD
 const { app, BrowserWindow, ipcMain, screen, shell, protocol, Tray, Menu, nativeImage } = electronApi;
+=======
+const { app, BrowserWindow, ipcMain, screen, shell, protocol } = electronApi;
+>>>>>>> yellow-hair
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 const { readFileSync, writeFileSync } = require('node:fs');
@@ -53,18 +57,25 @@ const fsPromises = require('node:fs/promises');
 // 点击穿透兜底通道的纯判定（不依赖 Electron 的 forward 鼠标钩子；见文件头注释）
 const { decideWindowIgnore, pointerZone } = require('./pointer-target.js');
 // 置顶看门狗：WS_EX_TOPMOST 只是样式位，不等于窗口真的在置顶带（见 topmost-watchdog.js 头部）
+<<<<<<< HEAD
 const {
   TOPMOST_WATCHDOG_TICK_MS,
   TOPMOST_WATCHDOG_ENABLED,
   shouldReassertTopmost,
   topmostLevel,
 } = require('./topmost-watchdog.js');
+=======
+const { TOPMOST_WATCHDOG_TICK_MS, shouldReassertTopmost } = require('./topmost-watchdog.js');
+>>>>>>> yellow-hair
 // 宿主存活判定（issue #56：宿主退出 → 管道断开 → 自己退，绝不弹框、绝不留僵尸）
 const { HOST_POLL_MS, hostIsGone, isBrokenPipeError, parseHostPid } = require('./host-liveness.js');
 // 全局 DPI 线性化的纯判定与换算（含平台例外：macOS 的 DIP 已是「点」，无需补偿；见该文件头）
 const { shouldLinearize, resolveForcedScale, resolvePetScale } = require('./dpi-linearization.js');
+<<<<<<< HEAD
 // 托盘的平台差异（模板图 / 左键是否自动弹菜单 / Dock）：规则住在模块里，main.js 只接线
 const { trayPlatform } = require('./tray-platform.js');
+=======
+>>>>>>> yellow-hair
 const { buildDeskGeometry } = require('./desktop-geometry.js');
 
 // 允许无用户手势直接播放（余额动画等）
@@ -294,6 +305,7 @@ const windows = new Map();
 const lastRequestedBounds = new Map();
 
 /**
+<<<<<<< HEAD
  * win.id -> 渲染端上报的窗口余量 `{ l, t }`（DIP）。
  * 上边距按气泡最大高度加高后**余量不再四边相等**，命中区不能再按「窗口宽/4」反推——
  * 这里存下来交给 pointer-target 的 spriteHitRect（见那里的注释）。
@@ -301,6 +313,8 @@ const lastRequestedBounds = new Map();
 const winMargins = new Map();
 
 /**
+=======
+>>>>>>> yellow-hair
  * 宠物间碰撞 broker 状态：petId -> { x, y, vx, vy, size, bottomPad }。
  * 来源：pet:set-bounds（位置+尺寸+速度，随漫游/拖拽/静止保真上报，每帧一次）+
  *       pet:report-flight（飞行中每 ~30ms 高频补充速度）。
@@ -366,15 +380,22 @@ const offBodyMs = new Map();
  * 桌面宠物列表（[{id,size}]）：宿主经 DSH_PET_PETS 透传（每只宠物一个窗口）。
  * 解析失败/未透传（手动 start-desktop）时回落到单个默认宠物窗口；renderer 首帧发来的
  * set-bounds 会按真实配置自校正尺寸与位置。
+<<<<<<< HEAD
  * **空数组是合法输入，不等于「未透传」**：宿主在「桌面宠物被全部关掉、但 Helper 仍需活着
  * 托住托盘」时会明确传 []（见 src/host/index.ts 的 desktopModeEverActive），此时必须建
  * 0 个窗口——回落成默认窗口会让渲染端读到「没有 desktop/both 宠物」并弹出红色错误条。
+=======
+>>>>>>> yellow-hair
  */
 function petsFromEnv() {
   try {
     const raw = process.env.DSH_PET_PETS || '';
     const arr = JSON.parse(raw);
+<<<<<<< HEAD
     if (Array.isArray(arr)) {
+=======
+    if (Array.isArray(arr) && arr.length > 0) {
+>>>>>>> yellow-hair
       return arr.map((p, i) => ({
         id: String(p?.id ?? `pet-${i}`),
         size: Number(p?.size) > 0 ? Number(p.size) : 462,
@@ -444,7 +465,11 @@ function createPetWindows() {
         spellcheck: false,
       },
     });
+<<<<<<< HEAD
     win.setAlwaysOnTop(true, topmostLevel(process.platform));
+=======
+    win.setAlwaysOnTop(true, 'screen-saver');
+>>>>>>> yellow-hair
     win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     // 窗口被其他窗口（另一只宠物）完全遮挡时，Chromium 默认会暂停本窗口渲染，
     // 导致大宠物移动盖过小宠物时小宠物显示为"消失"。关闭后台节流，让被遮挡
@@ -459,17 +484,41 @@ function createPetWindows() {
     win.webContents.on('did-finish-load', () => {
       win.webContents.setZoomFactor(scale);
     });
+<<<<<<< HEAD
     // 默认整窗点击穿透（renderer 在光标进/出身体命中区时经 IPC 翻转可交互）；
     // forward:true 保证穿透期间 mousemove 仍转发进渲染端做命中判定。
     setWindowIgnore(win, true);
     win.once('ready-to-show', () => win.showInactive());
+=======
+    // ---- 渲染端诊断：转发 console 到主进程日志 ----
+    win.webContents.on('console-message', (_event, level, message) => {
+      const tag = ['verbose', 'info', 'warning', 'error'][level] || 'log';
+      console.error(`[dsh-pet-desktop-helper] [renderer:${tag}] ${message}`);
+    });
+    // 默认整窗点击穿透（renderer 在光标进/出身体命中区时经 IPC 翻转可交互）；
+    // forward:true 保证穿透期间 mousemove 仍转发进渲染端做命中判定。
+    setWindowIgnore(win, true);
+    win.once('ready-to-show', () => {
+      console.error('[dsh-pet-desktop-helper] ready-to-show fired, calling showInactive');
+      win.showInactive();
+    });
+>>>>>>> yellow-hair
     // [#55 兜底显示] paintWhenInitiallyHidden:false 时渲染器可能不产出首帧，ready-to-show 便永不触发
     // （Electron 文档原文：ready-to-show "will never fire if you use paintWhenInitiallyHidden: false"），
     // 而 show() 只挂在它上面 → 窗口永远隐藏（进程活着、宠物逻辑照跑，桌面上什么都没有）。
     // 页面加载完成后强制兜底一次；zoomFactor 的设置在更早注册的 did-finish-load 里，顺序不受影响。
     win.webContents.once('did-finish-load', () => {
       setTimeout(() => {
+<<<<<<< HEAD
         if (!win.isDestroyed() && !win.isVisible()) win.showInactive();
+=======
+        if (!win.isDestroyed() && !win.isVisible()) {
+          console.error('[dsh-pet-desktop-helper] fallback showInactive (ready-to-show did not fire)');
+          win.showInactive();
+        } else if (!win.isDestroyed()) {
+          console.error('[dsh-pet-desktop-helper] window already visible, skip fallback show');
+        }
+>>>>>>> yellow-hair
       }, 400);
     });
     // [#55 兜底交互] 上面的翻转链路只有「Electron forward 鼠标钩子 → 渲染端命中判定」一个入口，
@@ -487,11 +536,18 @@ function createPetWindows() {
       const busy = inputBusy.get(win.id) === true;
       const point = screen.getCursorScreenPoint();
       // 余量区停留计时：只在"非 busy 且在余量区"时累加，离开余量区即清零；busy 期间不累加。
+<<<<<<< HEAD
       const mg = winMargins.get(win.id);
       const zone = pointerZone(b, point, mg);
       const nextMs = !busy && zone === 'margin' ? (offBodyMs.get(win.id) ?? 0) + POINTER_POLL_MS : 0;
       offBodyMs.set(win.id, nextMs);
       const next = decideWindowIgnore(b, point, ignoring, busy, nextMs, inputRegions.get(win.id), mg);
+=======
+      const zone = pointerZone(b, point);
+      const nextMs = !busy && zone === 'margin' ? (offBodyMs.get(win.id) ?? 0) + POINTER_POLL_MS : 0;
+      offBodyMs.set(win.id, nextMs);
+      const next = decideWindowIgnore(b, point, ignoring, busy, nextMs, inputRegions.get(win.id));
+>>>>>>> yellow-hair
       if (next !== ignoring) setWindowIgnore(win, next);
     }, POINTER_POLL_MS);
     // [置顶看门狗] 建窗时那次 setAlwaysOnTop 之后再没人复查过：外部任何一次 z 序扰动都能让桌宠
@@ -499,6 +555,7 @@ function createPetWindows() {
     // "是不是置顶"永远查得出 true、宠物却再也看不见，用户侧只能重启 helper 才回来。
     // 这里低频重钉一次：落地就是 SetWindowPos(HWND_TOPMOST, SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE)，
     // 不移动、不重绘、不抢焦点（判定的纯逻辑与全部依据见 topmost-watchdog.js）。
+<<<<<<< HEAD
     //
     // 【注意】总开关 `TOPMOST_WATCHDOG_ENABLED` 当前是 **关闭** 的：重钉会把桌宠抬到所有置顶窗口
     // 之上，打断全屏游戏与截图。关闭的理由、代价、以及一个尚未解决的「显示桌面后误置顶」bug，
@@ -519,20 +576,42 @@ function createPetWindows() {
       if (!due) return;
       lastTopmostAssertMs = nowMs;
       win.setAlwaysOnTop(true, topmostLevel(process.platform));
+=======
+    let lastTopmostAssertMs = Date.now();
+    const topmostTimer = setInterval(() => {
+      const nowMs = Date.now();
+      const due = shouldReassertTopmost({
+        nowMs,
+        lastAssertMs: lastTopmostAssertMs,
+        destroyed: win.isDestroyed(),
+        visible: win.isVisible(),
+        paused: pointerFallbackPaused,
+      });
+      if (!due) return;
+      lastTopmostAssertMs = nowMs;
+      win.setAlwaysOnTop(true, 'screen-saver');
+>>>>>>> yellow-hair
     }, TOPMOST_WATCHDOG_TICK_MS);
     win.on('closed', () => {
       clearInterval(pointerTimer);
       clearInterval(topmostTimer);
       windows.delete(pet.id);
       lastRequestedBounds.delete(win.id);
+<<<<<<< HEAD
       winMargins.delete(win.id);
+=======
+>>>>>>> yellow-hair
       windowIgnore.delete(win.id);
       inputBusy.delete(win.id);
       inputRegions.delete(win.id);
       offBodyMs.delete(win.id);
     });
     win
+<<<<<<< HEAD
       .loadFile('index.html', {
+=======
+      .loadFile(path.join(__dirname, 'index.html'), {
+>>>>>>> yellow-hair
         query: {
           configUrl,
           bridge: BRIDGE ? '1' : '0',
@@ -644,13 +723,31 @@ async function handleBridgeRequest(request) {
   if (method === 'POST' || method === 'PUT') {
     body = await request.text();
   }
+<<<<<<< HEAD
   const resp = await bridgeRequest(method, url.pathname + url.search, body);
+=======
+  // 视频请求诊断
+  const isThumb = url.pathname.includes('/thumb/');
+  if (isThumb) {
+    console.error('[dsh-pet-desktop-helper] bridge thumb: method=' + method + ' path=' + url.pathname);
+  }
+  const resp = await bridgeRequest(method, url.pathname + url.search, body);
+  if (isThumb) {
+    console.error('[dsh-pet-desktop-helper] bridge thumb host resp: status=' + resp.status + ' hasFile=' + !!resp.file + ' contentType=' + (resp.contentType || 'none') + ' file=' + (resp.file || 'none'));
+  }
+>>>>>>> yellow-hair
   const headers = { 'access-control-allow-origin': '*' }; // 渲染端页面是 file:// 源，scheme 跨源需 CORS
   if (resp.contentType) headers['content-type'] = resp.contentType;
   if (resp.file) {
     // 素材：直接读盘返回（宿主已解析好绝对路径；带 range 让视频能拖动进度条）
     try {
       const data = await fsPromises.readFile(resp.file);
+<<<<<<< HEAD
+=======
+      if (isThumb) {
+        console.error('[dsh-pet-desktop-helper] bridge thumb file read: size=' + data.length + ' file=' + resp.file);
+      }
+>>>>>>> yellow-hair
       return new Response(new Uint8Array(data), { status: resp.status || 200, headers });
     } catch (e) {
       console.error('[dsh-pet-desktop-helper] bridge file read failed:', resp.file, e);
@@ -660,6 +757,7 @@ async function handleBridgeRequest(request) {
   return new Response(resp.body ?? '', { status: resp.status || 200, headers });
 }
 
+<<<<<<< HEAD
 // ---------- 系统托盘：桌面端显示开关 ----------
 // 为什么托盘放在本进程：它是桌面模式唯一「不进浏览器」的入口。某只宠物的 display 被改成
 // web/none 之后，它在桌面上就没有窗口了，**它自己的右键菜单也跟着消失**；托盘是此时唯一还能
@@ -758,6 +856,8 @@ async function startTray() {
   }
 }
 
+=======
+>>>>>>> yellow-hair
 app.whenReady().then(() => {
   // 探测子进程：此时没有 force-device-scale-factor，读到的是 Windows 的真实主屏缩放。
   // 退出推迟一拍——在 ready 回调里直接 app.exit() 会赶在 stdout 落盘前拆掉进程
@@ -791,12 +891,15 @@ app.whenReady().then(() => {
     startBridgeCallback(); // 宿主应答回调服务器（stdin 在 Electron 主进程不可用，改走本地 HTTP）
   }
 
+<<<<<<< HEAD
   // macOS：桌面宠物不该占 Dock——托盘才是桌面端的常驻入口，Dock 里多一个图标只会碍事
   if (TRAY_PLATFORM.hideDock && app.dock) app.dock.hide();
 
   // 托盘：不 await（建窗与建托盘互不依赖），内部自己等 bridge 回调服务就绪
   void startTray();
 
+=======
+>>>>>>> yellow-hair
   createPetWindows();
 
   // 宠物窗口跟随：renderer 逐帧上报窗口内容区位置/尺寸
@@ -817,10 +920,13 @@ app.whenReady().then(() => {
       lastRequestedBounds.set(win.id, key);
       win.setContentBounds(rect, false);
     }
+<<<<<<< HEAD
     // 窗口余量（左右/上）：命中区判定的依据，余量四边不再相等（上边距按气泡最大高度加高）
     const ml = Number(bounds?.marginL);
     const mt = Number(bounds?.marginT);
     if (Number.isFinite(ml) && Number.isFinite(mt)) winMargins.set(win.id, { l: ml, t: mt });
+=======
+>>>>>>> yellow-hair
     // 碰撞站场：位置必须用**包围盒左上角**（renderer 显式上报 boxX/boxY）——
     // 窗口坐标 = 包围盒 − margin（半只宠物宽），直接拿窗口坐标会让跨窗检测整体错位
     const petId = [...windows.keys()].find((id) => windows.get(id) === win);
@@ -883,6 +989,7 @@ app.whenReady().then(() => {
     // 渲染端的旧 menuOpen/chatOpen 守卫会请求整窗可交互；这里按真实光标和控件矩形裁定。
     const ignoring =
       interactive && input && inputBusy.get(win.id)
+<<<<<<< HEAD
         ? decideWindowIgnore(
             win.getContentBounds(),
             screen.getCursorScreenPoint(),
@@ -892,6 +999,9 @@ app.whenReady().then(() => {
             input,
             winMargins.get(win.id),
           )
+=======
+        ? decideWindowIgnore(win.getContentBounds(), screen.getCursorScreenPoint(), false, true, 0, input)
+>>>>>>> yellow-hair
         : !interactive;
     setWindowIgnore(win, ignoring);
   });
@@ -1217,6 +1327,7 @@ app.whenReady().then(() => {
   }
 });
 
+<<<<<<< HEAD
 // 退出时销毁托盘图标：不销毁会在 Windows 通知区留下「幽灵图标」（鼠标划过才消失）。
 // 注意宿主改 display 时是 SIGTERM/SIGKILL 硬杀（helper-process.ts），Windows 上那是
 // TerminateProcess、拦不到，所以这条只覆盖优雅退出（窗口全关、宿主存活探测判定退出等）。
@@ -1235,3 +1346,8 @@ app.on('window-all-closed', () => {
   if (tray) return;
   app.quit();
 });
+=======
+app.on('window-all-closed', () => {
+  app.quit();
+});
+>>>>>>> yellow-hair
