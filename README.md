@@ -493,6 +493,7 @@ python chroma_step02.py      # 绿幕抠像转透明 → step02/
 python normalize_step03.py   # 归一化 2160×1215 统一站立居中 → step03/
 python encode_thumbs.py      # 转码 640×360 播放变体 → step04/
 python publish_step05.py     # ⑤ 收尾（见下方）
+
 ```
 
 **依赖**：Python 3 + ffmpeg + numpy + scipy（素材链脚本自动用工作区 `.tools/` 下的 ffmpeg）。
